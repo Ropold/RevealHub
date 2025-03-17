@@ -56,4 +56,9 @@ public class RevealService {
         revealRepository.deleteById(id);
     }
 
+    public List<RevealModel> getRevealsForGithubUser(String githubId) {
+        return revealRepository.findAll().stream()
+                .filter(revealModel -> revealModel.GithubId().equals(githubId))
+                .toList();
+    }
 }
