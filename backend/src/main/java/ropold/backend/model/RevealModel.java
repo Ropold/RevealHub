@@ -10,10 +10,7 @@ public record RevealModel(
         Category category,
         String description,
         boolean isActive,
-        String appUserGithubId,
-        String appUserUsername,
-        String appUserAvatarUrl,
-        String appUserGithubUrl,
+        String GithubId,
         String imageUrl
 ) {
 }
