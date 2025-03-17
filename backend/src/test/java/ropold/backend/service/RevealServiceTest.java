@@ -2,6 +2,7 @@ package ropold.backend.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ropold.backend.Service.CloudinaryService;
 import ropold.backend.Service.IdService;
 import ropold.backend.Service.RevealService;
 import ropold.backend.model.Category;
@@ -16,7 +17,8 @@ import static org.mockito.Mockito.*;
 class RevealServiceTest {
     IdService idService = mock(IdService.class);
     RevealRepository revealRepository = mock(RevealRepository.class);
-    RevealService revealService = new RevealService(idService, revealRepository);
+    CloudinaryService cloudinaryService = mock(CloudinaryService.class);
+    RevealService revealService = new RevealService(idService, revealRepository, cloudinaryService);
 
     List<RevealModel> revealModels;
 
