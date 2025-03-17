@@ -40,9 +40,6 @@ class RevealControllerIntegrationTest {
                 "Sample description for the RevealModel.",
                 true,
                 "user",
-                "user1",
-                "https://avatars.example.com/user1.png",
-                "https://github.com/user1",
                 "https://example.com/image1.jpg"
         );
 
@@ -55,9 +52,6 @@ class RevealControllerIntegrationTest {
                 "A brief description",
                 true,
                 "user",
-                "user1",
-                "https://avatars.example.com/user1.png",
-                "https://github.com/user1",
                 "https://example.com/image1.jpg"
         );
         revealRepository.saveAll(List.of(revealModel1, revealModel2));
@@ -79,10 +73,7 @@ class RevealControllerIntegrationTest {
                         "category": "ANIMAL",
                         "description": "Sample description for the RevealModel.",
                         "isActive": true,
-                        "appUserGithubId": "user",
-                        "appUserUsername": "user1",
-                        "appUserAvatarUrl": "https://avatars.example.com/user1.png",
-                        "appUserGithubUrl": "https://github.com/user1",
+                        "GithubId": "user",
                         "imageUrl": "https://example.com/image1.jpg"
                     },
                     {
@@ -93,10 +84,7 @@ class RevealControllerIntegrationTest {
                         "category": "FOOD",
                         "description": "A brief description",
                         "isActive": true,
-                        "appUserGithubId": "user",
-                        "appUserUsername": "user1",
-                        "appUserAvatarUrl": "https://avatars.example.com/user1.png",
-                        "appUserGithubUrl": "https://github.com/user1",
+                        "GithubId": "user",
                         "imageUrl": "https://example.com/image1.jpg"
                     }
                 ]
@@ -110,17 +98,15 @@ class RevealControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/reveal-hub/test-add")
                 .contentType("application/json")
                 .content("""
-                    {
+
+                        {
                         "name": "Test Reveal",
                         "solutionWords": ["Solution1", "Solution2"],
                         "closeSolutionWords": ["Close Solution1", "Close Solution2"],
                         "category": "FOOD",
                         "description": "A brief description",
                         "isActive": true,
-                        "appUserGithubId": "user",
-                        "appUserUsername": "user1",
-                        "appUserAvatarUrl": "https://avatars.example.com/user1.png",
-                        "appUserGithubUrl": "https://github.com/user1",
+                        "GithubId": "user",
                         "imageUrl": "https://example.com/image1.jpg"
                     }
                     """)
@@ -137,12 +123,7 @@ class RevealControllerIntegrationTest {
                 .hasFieldOrPropertyWithValue("category", Category.FOOD)
                 .hasFieldOrPropertyWithValue("description", "A brief description")
                 .hasFieldOrPropertyWithValue("isActive", true)
-                .hasFieldOrPropertyWithValue("appUserGithubId", "user")
-                .hasFieldOrPropertyWithValue("appUserUsername", "user1")
-                .hasFieldOrPropertyWithValue("appUserAvatarUrl", "https://avatars.example.com/user1.png")
-                .hasFieldOrPropertyWithValue("appUserGithubUrl", "https://github.com/user1")
+                .hasFieldOrPropertyWithValue("GithubId", "user")
                 .hasFieldOrPropertyWithValue("imageUrl", "https://example.com/image1.jpg");
     }
-
-
 }

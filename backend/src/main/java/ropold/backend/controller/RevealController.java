@@ -22,7 +22,7 @@ public class RevealController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/test-reveal")
+    @PostMapping("/test-add")
     public RevealModel addTestReveal(@RequestBody RevealModelDto revealModelDto) {
         return revealService.addTestReveal(
                 new RevealModel(
