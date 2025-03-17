@@ -2,6 +2,8 @@ package ropold.backend.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import ropold.backend.Service.RevealService;
 import ropold.backend.model.RevealModel;
@@ -36,6 +38,22 @@ public class RevealController {
                         revealModelDto.GithubId(),
                         revealModelDto.imageUrl()
                 ));
+    }
+
+    @GetMapping("/active")
+    public List<RevealModel> getActiveReveals() {
+        return revealService.getActiveReveals();
+    }
+
+    @GetMapping("/{id}")
+    public RevealModel getRevealById(@PathVariable String id) {
+        return revealService.getRevealById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteReveal(@PathVariable String id, @AuthenticationPrincipal OAuth2User authentication) {
+        revealService.deleteReveal(id);
     }
 
 }
