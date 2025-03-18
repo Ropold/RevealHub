@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ropold.backend.Service.CloudinaryService;
 import ropold.backend.Service.RevealService;
 import ropold.backend.exception.AccessDeniedException;
+import ropold.backend.exception.RevealNotFoundException;
 import ropold.backend.model.RevealModel;
 import ropold.backend.model.RevealModelDto;
 
@@ -53,7 +54,11 @@ public class RevealController {
 
     @GetMapping("/{id}")
     public RevealModel getRevealById(@PathVariable String id) {
-        return revealService.getRevealById(id);
+        RevealModel reveal = revealService.getRevealById(id);
+        if(reveal == null) {
+            throw new RevealNotFoundException("No Reveal found with id: " + id);
+        }
+        return reveal;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
