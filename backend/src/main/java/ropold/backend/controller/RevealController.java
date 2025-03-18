@@ -59,13 +59,13 @@ public class RevealController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public RevealModel addReveal(
-            @RequestPart RevealModelDto revealModelDto,
+            @RequestPart("revealModelDto") @Valid RevealModelDto revealModelDto,
             @RequestPart(value = "image", required = false) MultipartFile image,
             @AuthenticationPrincipal OAuth2User authentication) throws IOException {
 
         String authenticatedUserId = authentication.getName();
-        if(!authenticatedUserId.equals(revealModelDto.GithubId())){
-            throw new java.nio.file.AccessDeniedException("You are not allowed to add this reveal");
+        if (!authenticatedUserId.equals(revealModelDto.GithubId())) {
+            throw new AccessDeniedException("You are not allowed to add this reveal");
         }
 
         String imageUrl = null;
@@ -86,6 +86,7 @@ public class RevealController {
                         imageUrl
                 ));
     }
+
 
     @PutMapping("/{id}")
     public RevealModel updateReveal(
