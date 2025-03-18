@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -80,6 +81,40 @@ class RevealControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub")
                 )
 
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json("""
+                [
+                    {
+                        "id": "1",
+                        "name": "Bobby Brown",
+                        "solutionWords": ["word1", "word2", "word3"],
+                        "closeSolutionWords": ["closeWord1", "closeWord2"],
+                        "category": "ANIMAL",
+                        "description": "Sample description for the RevealModel.",
+                        "isActive": true,
+                        "GithubId": "user",
+                        "imageUrl": "https://example.com/image1.jpg"
+                    },
+                    {
+                        "id": "2",
+                        "name": "Johnny Cash",
+                        "solutionWords": ["Solution1", "Solution2"],
+                        "closeSolutionWords": ["Close Solution1", "Close Solution2"],
+                        "category": "FOOD",
+                        "description": "A brief description",
+                        "isActive": true,
+                        "GithubId": "user",
+                        "imageUrl": "https://example.com/image1.jpg"
+                    }
+                ]
+            """));
+    }
+
+    @Test
+    void getRevealsForGithubUser_shouldReturnRevealsForGithubUser() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users/me/my-reveals/user")
+                        .with(oidcLogin().idToken(i -> i.claim("sub", "user")))
+                )
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json("""
                 [

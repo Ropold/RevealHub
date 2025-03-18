@@ -50,4 +50,17 @@ class AppUserServiceTest {
         verify(appUserRepository, times(1)).findById(userId);
     }
 
+    @Test
+    void getUserFavorites_ReturnsFavorites() {
+        String userId = "user";
+        List<String> favorites = List.of("memory1", "memory2");
+        AppUser user = new AppUser(userId, "username", "name", "avatarUrl", "githubUrl", favorites);
+        when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        List<String> result = appUserService.getUserFavorites(userId);
+
+        assertNotNull(result);
+        assertEquals(favorites, result);
+        verify(appUserRepository, times(1)).findById(userId);
+    }
 }
