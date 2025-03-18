@@ -1,11 +1,15 @@
 package ropold.backend.controller;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.Uploader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +23,10 @@ import ropold.backend.repository.RevealRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,6 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class RevealControllerIntegrationTest {
+
+    @MockBean
+    private Cloudinary cloudinary;
 
     @Autowired
     MockMvc mockMvc;
@@ -141,4 +151,110 @@ class RevealControllerIntegrationTest {
                 .hasFieldOrPropertyWithValue("GithubId", "user")
                 .hasFieldOrPropertyWithValue("imageUrl", "https://example.com/image1.jpg");
     }
+
+    @Test
+    void getActiveReveals_shouldReturnActiveReveals() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub/active")
+                )
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json("""
+                [
+                    {
+                        "id": "1",
+                        "name": "Bobby Brown",
+                        "solutionWords": ["word1", "word2", "word3"],
+                        "closeSolutionWords": ["closeWord1", "closeWord2"],
+                        "category": "ANIMAL",
+                        "description": "Sample description for the RevealModel.",
+                        "isActive": true,
+                        "GithubId": "user",
+                        "imageUrl": "https://example.com/image1.jpg"
+                    },
+                    {
+                        "id": "2",
+                        "name": "Johnny Cash",
+                        "solutionWords": ["Solution1", "Solution2"],
+                        "closeSolutionWords": ["Close Solution1", "Close Solution2"],
+                        "category": "FOOD",
+                        "description": "A brief description",
+                        "isActive": true,
+                        "GithubId": "user",
+                        "imageUrl": "https://example.com/image1.jpg"
+                    }
+                ]
+            """));
+    }
+
+    @Test
+    void getRevealById_shouldReturnReveal() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub/1")
+                )
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json("""
+                {
+                    "id": "1",
+                    "name": "Bobby Brown",
+                    "solutionWords": ["word1", "word2", "word3"],
+                    "closeSolutionWords": ["closeWord1", "closeWord2"],
+                    "category": "ANIMAL",
+                    "description": "Sample description for the RevealModel.",
+                    "isActive": true,
+                    "GithubId": "user",
+                    "imageUrl": "https://example.com/image1.jpg"
+                }
+            """));
+    }
+
+    @Test
+    void postReveal_shouldAddReveal() throws Exception {
+        OAuth2User mockOAuth2User = mock(OAuth2User.class);
+        when(mockOAuth2User.getName()).thenReturn("user");
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockOAuth2User, null,
+                        Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
+        revealRepository.deleteAll();
+
+        Uploader mockUploader = mock(Uploader.class);
+        when(mockUploader.upload(any(), anyMap())).thenReturn(Map.of("secure_url", "https://www.test.de/"));
+        when(cloudinary.uploader()).thenReturn(mockUploader);
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/reveal-hub")
+                        .file(new MockMultipartFile("image", "image.jpg", "image/jpeg", "image".getBytes()))
+                        .file(new MockMultipartFile("revealModelDto", "", "application/json", """
+                        {
+                            "name": "Test Reveal",
+                            "solutionWords": ["Solution1", "Solution2"],
+                            "closeSolutionWords": ["Close Solution1", "Close Solution2"],
+                            "category": "FOOD",
+                            "description": "A brief description",
+                            "isActive": true,
+                            "GithubId": "user",
+                            "imageUrl": "https://example.com/image1.jpg"
+                        }
+                        """.getBytes())))
+                .andExpect(status().isCreated());
+
+        List<RevealModel> allReveals = revealRepository.findAll();
+        Assertions.assertEquals(1, allReveals.size());
+
+        RevealModel savedReveal = allReveals.getFirst();
+        org.assertj.core.api.Assertions.assertThat(savedReveal)
+                .usingRecursiveComparison()
+                .ignoringFields("id", "imageUrl")
+                .isEqualTo(new RevealModel(
+                        null,
+                        "Test Reveal",
+                        List.of("Solution1", "Solution2"),
+                        List.of("Close Solution1", "Close Solution2"),
+                        Category.FOOD,
+                        "A brief description",
+                        true,
+                        "user",
+                        "https://example.com/image1.jpg"
+                ));
+    }
+
 }
