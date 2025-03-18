@@ -21,7 +21,7 @@ public class RevealService {
     }
 
 
-    public RevealModel addTestReveal(RevealModel revealModel) {
+    public RevealModel addReveal(RevealModel revealModel) {
         RevealModel newRevealModel = new RevealModel(
                 idService.generateRandomId(),
                 revealModel.name(),
@@ -61,4 +61,23 @@ public class RevealService {
                 .filter(revealModel -> revealModel.GithubId().equals(githubId))
                 .toList();
     }
+
+    public RevealModel updateReveal(String id, RevealModel revealModel) {
+        if(revealRepository.existsById(id)) {
+            RevealModel updatedRevealModel = new RevealModel(
+                    id,
+                    revealModel.name(),
+                    revealModel.solutionWords(),
+                    revealModel.closeSolutionWords(),
+                    revealModel.category(),
+                    revealModel.description(),
+                    revealModel.isActive(),
+                    revealModel.GithubId(),
+                    revealModel.imageUrl()
+            );
+            return revealRepository.save(updatedRevealModel);
+        }
+        throw new RevealNotFoundException("No Reveal found with id: " + id);
+    }
+
 }
