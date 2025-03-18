@@ -77,7 +77,7 @@ class RevealServiceTest {
         when(idService.generateRandomId()).thenReturn("3");
         when(revealRepository.save(revealModel3)).thenReturn(revealModel3);
 
-        RevealModel expected = revealService.addTestReveal(revealModel3);
+        RevealModel expected = revealService.addReveal(revealModel3);
 
         assertEquals(revealModel3, expected);
         verify(idService, times(1)).generateRandomId();
