@@ -21,6 +21,7 @@ import ropold.backend.repository.RevealRepository;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -81,6 +82,36 @@ class ExceptionHandlerTest {
                 }
             """));
 
+    }
+
+    @Test
+    @WithMockUser(username = "user")
+    void postReveal_shouldReturnAccessDenied_whenUserIsNotAuthorized() throws Exception {
+
+        OAuth2User mockOAuth2User = mock(OAuth2User.class);
+        when(mockOAuth2User.getName()).thenReturn("user");
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(mockOAuth2User, null,
+                        Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"))));
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/reveal-hub")
+                        .file(new MockMultipartFile("image", "image.jpg", "image/jpeg", "image".getBytes()))
+                        .file(new MockMultipartFile("revealModelDto", "", "application/json", """
+                    {
+                        "name": "Boom",
+                        "solutionWords": ["huhu"],
+                        "closeSolutionWords": ["closeWord1", "closeWord2"],
+                        "category": "ANIMAL",
+                        "description": "Sample description for the RevealModel.",
+                        "isActive": true,
+                        "GithubId": "anotherUser",
+                        "imageUrl": "image.com"
+                    }
+                """.getBytes())))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message", is("You are not allowed to add this reveal")))
+                .andReturn();
     }
 
 
