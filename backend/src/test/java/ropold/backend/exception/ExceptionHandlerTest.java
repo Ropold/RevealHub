@@ -41,6 +41,9 @@ class ExceptionHandlerTest {
     @Autowired
     private RevealRepository revealRepository;
 
+    @MockBean
+    private RevealService revealService;
+
 
     @Test
     void whenRevealNotFoundException_thenReturnsNotFound() throws Exception {
@@ -114,7 +117,14 @@ class ExceptionHandlerTest {
                 .andReturn();
     }
 
+    @Test
+    void whenRuntimeException_thenReturnsInternalServerError() throws Exception {
+        when(revealService.getRevealById(any())).thenThrow(new RuntimeException("Unexpected error"));
 
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub/{id}", "any-id"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").value("Unexpected error"));
 
+    }
 
 }
