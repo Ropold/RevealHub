@@ -27,8 +27,9 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -117,7 +118,6 @@ class RevealControllerIntegrationTest {
                 new UsernamePasswordAuthenticationToken(mockOAuth2User, null,
                         Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")))
         );
-
         revealRepository.deleteAll();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/reveal-hub/test-add")
@@ -214,7 +214,6 @@ class RevealControllerIntegrationTest {
                 new UsernamePasswordAuthenticationToken(mockOAuth2User, null,
                         Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")))
         );
-
         revealRepository.deleteAll();
 
         Uploader mockUploader = mock(Uploader.class);
@@ -255,6 +254,64 @@ class RevealControllerIntegrationTest {
                         "user",
                         "https://example.com/image1.jpg"
                 ));
+    }
+
+    @Test
+    void updateRevealWithPut_shouldUpdateRevealDetails() throws Exception {
+        OAuth2User mockOAuth2User = mock(OAuth2User.class);
+        when(mockOAuth2User.getName()).thenReturn("user");
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockOAuth2User, null,
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
+        Uploader mockUploader = mock(Uploader.class);
+        when(mockUploader.upload(any(), anyMap())).thenReturn(Map.of("secure_url", "https://example.com/updated-image.jpg"));
+        when(cloudinary.uploader()).thenReturn(mockUploader);
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/reveal-hub/1")
+                        .file(new MockMultipartFile("image", "image.jpg", "image/jpeg", "image".getBytes()))
+                        .file(new MockMultipartFile("revealModelDto", "", "application/json", """
+                        {
+                            "name": "Updated Reveal",
+                            "solutionWords": ["Solution1", "Solution2"],
+                            "closeSolutionWords": ["Close Solution1", "Close Solution2"],
+                            "category": "FOOD",
+                            "description": "A brief description",
+                            "isActive": true,
+                            "GithubId": "user",
+                            "imageUrl": "https://example.com/updated-image.jpg"
+                        }
+                    """.getBytes()))
+                        .contentType("multipart/form-data")
+                .with(request -> { request.setMethod("PUT"); return request; }))
+            .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Updated Reveal"))
+                .andExpect(jsonPath("$.imageUrl").value("https://example.com/updated-image.jpg"));
+
+        Assertions.assertEquals("Updated Reveal", revealRepository.findById("1").orElseThrow().name());
+    }
+
+    @Test
+    void deleteReveal_shouldDeleteReveal() throws Exception {
+        OAuth2User mockOAuth2User = mock(OAuth2User.class);
+        when(mockOAuth2User.getName()).thenReturn("user");
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockOAuth2User, null,
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
+        Uploader mockUploader = mock(Uploader.class);
+        when(mockUploader.upload(any(), anyMap())).thenReturn(Map.of("secure_url", "https://example.com/updated-image.jpg"));
+        when(cloudinary.uploader()).thenReturn(mockUploader);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/reveal-hub/1"))
+                .andExpect(status().isNoContent());
+
+        Assertions.assertTrue(revealRepository.findById("1").isEmpty());
+        verify(mockUploader).destroy(eq("image1"), anyMap());
     }
 
 }
