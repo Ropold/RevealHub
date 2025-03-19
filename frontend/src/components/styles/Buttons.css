@@ -1,0 +1,15 @@
+.button-group-button {
+    background-color: #66b3ff;
+}
+
+.button-group-button:hover {
+    background-color: #007bff;
+}
+
+#button-high-score {
+    background-color: #ff9e00;
+}
+
+#button-high-score:hover {
+    background-color: #e67e00;
+}
