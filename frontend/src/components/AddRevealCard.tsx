@@ -27,10 +27,14 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        // Entfernen von leeren Strings aus den solutionWords und closeSolutionWords
+        const cleanedSolutionWords = solutionWords.filter(word => word.trim() !== "");
+        const cleanedCloseSolutionWords = closeSolutionWords.filter(word => word.trim() !== "");
+
         const revealData = {
             name,
-            solutionWords,
-            closeSolutionWords,
+            solutionWords: cleanedSolutionWords.length > 0 ? cleanedSolutionWords : [],
+            closeSolutionWords: cleanedCloseSolutionWords.length > 0 ? cleanedCloseSolutionWords : [],
             category,
             description,
             isActive: true,
@@ -117,7 +121,6 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
         <>
             <div className="edit-form">
                 <h2>Add Reveal Card</h2>
-                <p>{props.user}</p>
                 <form onSubmit={handleSubmit}>
                     <label>
                         Name:
@@ -162,7 +165,7 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
                                 onChange={(e) => handleSolutionWordChange(index, e.target.value)}
                             />
                         ))}
-                        <button type="button" className="button-group-button solution-word-button" onClick={handleAddSolutionWord}>
+                        <button type="button" className="solution-words-button" onClick={handleAddSolutionWord}>
                             Add More Solution Words
                         </button>
                     </label>
@@ -179,7 +182,7 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
                                 onChange={(e) => handleCloseSolutionWordChange(index, e.target.value)}
                             />
                         ))}
-                        <button type="button" className="button-group-button solution-word-button" onClick={handleAddCloseSolutionWord}>
+                        <button type="button" className="solution-words-button" onClick={handleAddCloseSolutionWord}>
                             Add More Close Solution Words
                         </button>
                     </label>
@@ -193,7 +196,6 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
                         />
                     </label>
 
-
                     <label>
                         Image:
                         <input
@@ -201,7 +203,6 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
                             onChange={onFileChange}
                         />
                     </label>
-
 
                     {image && (
                         <img src={URL.createObjectURL(image)} className="memory-card-image" alt="Preview" />
