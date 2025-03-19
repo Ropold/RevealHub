@@ -1,5 +1,17 @@
+import {RevealModel} from "./model/RevealModel.ts";
+import {useEffect} from "react";
 
-export default function MyReveals(){
+type MyRevealsProps = {
+    allReveals: RevealModel[];
+    getAllReveals: () => void;
+}
+
+export default function MyReveals(props: Readonly<MyRevealsProps>) {
+
+    useEffect(() => {
+        props.getAllReveals()
+    }, []);
+
     return (
         <>
             <div>

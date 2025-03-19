@@ -89,28 +89,24 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
         setErrorMessages([]);
     };
 
-    // Funktion zum Hinzufügen eines neuen solutionWords
     const handleAddSolutionWord = () => {
         if (solutionWords) {
             setSolutionWords([...solutionWords, ""]);
         }
     };
 
-    // Funktion zum Hinzufügen eines neuen closeSolutionWords
     const handleAddCloseSolutionWord = () => {
         if (closeSolutionWords) {
             setCloseSolutionWords([...closeSolutionWords, ""]);
         }
     };
 
-    // Funktion zum Bearbeiten eines solutionWord
     const handleSolutionWordChange = (index: number, value: string) => {
         const newSolutionWords = [...solutionWords];
         newSolutionWords[index] = value;
         setSolutionWords(newSolutionWords);
     };
 
-    // Funktion zum Bearbeiten eines closeSolutionWord
     const handleCloseSolutionWordChange = (index: number, value: string) => {
         const newCloseSolutionWords = [...closeSolutionWords];
         newCloseSolutionWords[index] = value;
@@ -154,7 +150,6 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
 
                     {/* solutionWords */}
                     <label className="label-solution-words">
-
                         Solution Words:
                         {solutionWords.map((word, index) => (
                             <input
