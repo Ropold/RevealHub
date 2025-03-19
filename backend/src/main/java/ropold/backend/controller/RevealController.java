@@ -42,7 +42,7 @@ public class RevealController {
                         revealModelDto.category(),
                         revealModelDto.description(),
                         revealModelDto.isActive(),
-                        revealModelDto.GithubId(),
+                        revealModelDto.githubId(),
                         revealModelDto.imageUrl()
                 ));
     }
@@ -69,7 +69,7 @@ public class RevealController {
             @AuthenticationPrincipal OAuth2User authentication) throws IOException {
 
         String authenticatedUserId = authentication.getName();
-        if (!authenticatedUserId.equals(revealModelDto.GithubId())) {
+        if (!authenticatedUserId.equals(revealModelDto.githubId())) {
             throw new AccessDeniedException("You are not allowed to add this reveal");
         }
 
@@ -87,7 +87,7 @@ public class RevealController {
                         revealModelDto.category(),
                         revealModelDto.description(),
                         revealModelDto.isActive(),
-                        revealModelDto.GithubId(),
+                        revealModelDto.githubId(),
                         imageUrl
                 ));
     }
@@ -103,7 +103,7 @@ public class RevealController {
         String authenticatedUserId = authentication.getName();
         RevealModel existingReveal = revealService.getRevealById(id);
 
-        if(!authenticatedUserId.equals(existingReveal.GithubId())){
+        if(!authenticatedUserId.equals(existingReveal.githubId())){
             throw new AccessDeniedException("You are not allowed to update this reveal");
         }
 
@@ -124,14 +124,12 @@ public class RevealController {
                         revealModelDto.category(),
                         revealModelDto.description(),
                         revealModelDto.isActive(),
-                        revealModelDto.GithubId(),
+                        revealModelDto.githubId(),
                         newImageUrl
                 )
         );
 
     }
-
-
 
 
     @DeleteMapping("/{id}")
@@ -140,7 +138,7 @@ public class RevealController {
         String authenticatedUserId = authentication.getName();
 
         RevealModel reveal = revealService.getRevealById(id);
-        if (!reveal.GithubId().equals(authenticatedUserId)) {
+        if (!reveal.githubId().equals(authenticatedUserId)) {
             throw new AccessDeniedException("You are not allowed to delete this reveal");
         }
         revealService.deleteReveal(id);

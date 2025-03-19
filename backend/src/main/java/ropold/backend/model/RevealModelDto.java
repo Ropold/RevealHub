@@ -22,7 +22,7 @@ public record RevealModelDto(
 
         String description,
         boolean isActive,
-        String GithubId,
+        String githubId,
 
         @NotBlank(message = "Image URL cannot be blank")
         String imageUrl

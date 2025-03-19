@@ -92,7 +92,7 @@ class RevealControllerIntegrationTest {
                         "category": "ANIMAL",
                         "description": "Sample description for the RevealModel.",
                         "isActive": true,
-                        "GithubId": "user",
+                        "githubId": "user",
                         "imageUrl": "https://example.com/image1.jpg"
                     },
                     {
@@ -103,7 +103,7 @@ class RevealControllerIntegrationTest {
                         "category": "FOOD",
                         "description": "A brief description",
                         "isActive": true,
-                        "GithubId": "user",
+                        "githubId": "user",
                         "imageUrl": "https://example.com/image1.jpg"
                     }
                 ]
@@ -126,7 +126,7 @@ class RevealControllerIntegrationTest {
                         "category": "ANIMAL",
                         "description": "Sample description for the RevealModel.",
                         "isActive": true,
-                        "GithubId": "user",
+                        "githubId": "user",
                         "imageUrl": "https://example.com/image1.jpg"
                     },
                     {
@@ -137,7 +137,7 @@ class RevealControllerIntegrationTest {
                         "category": "FOOD",
                         "description": "A brief description",
                         "isActive": true,
-                        "GithubId": "user",
+                        "githubId": "user",
                         "imageUrl": "https://example.com/image1.jpg"
                     }
                 ]
@@ -166,7 +166,7 @@ class RevealControllerIntegrationTest {
                         "category": "FOOD",
                         "description": "A brief description",
                         "isActive": true,
-                        "GithubId": "user",
+                        "githubId": "user",
                         "imageUrl": "https://example.com/image1.jpg"
                     }
                     """)
@@ -183,7 +183,7 @@ class RevealControllerIntegrationTest {
                 .hasFieldOrPropertyWithValue("category", Category.FOOD)
                 .hasFieldOrPropertyWithValue("description", "A brief description")
                 .hasFieldOrPropertyWithValue("isActive", true)
-                .hasFieldOrPropertyWithValue("GithubId", "user")
+                .hasFieldOrPropertyWithValue("githubId", "user")
                 .hasFieldOrPropertyWithValue("imageUrl", "https://example.com/image1.jpg");
     }
 
@@ -202,7 +202,7 @@ class RevealControllerIntegrationTest {
                         "category": "ANIMAL",
                         "description": "Sample description for the RevealModel.",
                         "isActive": true,
-                        "GithubId": "user",
+                        "githubId": "user",
                         "imageUrl": "https://example.com/image1.jpg"
                     },
                     {
@@ -213,7 +213,7 @@ class RevealControllerIntegrationTest {
                         "category": "FOOD",
                         "description": "A brief description",
                         "isActive": true,
-                        "GithubId": "user",
+                        "githubId": "user",
                         "imageUrl": "https://example.com/image1.jpg"
                     }
                 ]
@@ -234,7 +234,7 @@ class RevealControllerIntegrationTest {
                     "category": "ANIMAL",
                     "description": "Sample description for the RevealModel.",
                     "isActive": true,
-                    "GithubId": "user",
+                    "githubId": "user",
                     "imageUrl": "https://example.com/image1.jpg"
                 }
             """));
@@ -265,7 +265,7 @@ class RevealControllerIntegrationTest {
                             "category": "FOOD",
                             "description": "A brief description",
                             "isActive": true,
-                            "GithubId": "user",
+                            "githubId": "user",
                             "imageUrl": "https://example.com/image1.jpg"
                         }
                         """.getBytes())))
@@ -315,7 +315,7 @@ class RevealControllerIntegrationTest {
                             "category": "FOOD",
                             "description": "A brief description",
                             "isActive": true,
-                            "GithubId": "user",
+                            "githubId": "user",
                             "imageUrl": "https://example.com/updated-image.jpg"
                         }
                     """.getBytes()))
