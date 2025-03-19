@@ -30,7 +30,7 @@ public class RevealService {
                 revealModel.category(),
                 revealModel.description(),
                 revealModel.isActive(),
-                revealModel.GithubId(),
+                revealModel.githubId(),
                 revealModel.imageUrl()
         );
         return revealRepository.save(newRevealModel);
@@ -58,7 +58,7 @@ public class RevealService {
 
     public List<RevealModel> getRevealsForGithubUser(String githubId) {
         return revealRepository.findAll().stream()
-                .filter(revealModel -> revealModel.GithubId().equals(githubId))
+                .filter(revealModel -> revealModel.githubId().equals(githubId))
                 .toList();
     }
 
@@ -72,7 +72,7 @@ public class RevealService {
                     revealModel.category(),
                     revealModel.description(),
                     revealModel.isActive(),
-                    revealModel.GithubId(),
+                    revealModel.githubId(),
                     revealModel.imageUrl()
             );
             return revealRepository.save(updatedRevealModel);
