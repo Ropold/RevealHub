@@ -13,3 +13,16 @@
 #button-high-score:hover {
     background-color: #e67e00;
 }
+
+.space-between{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+.solution-word-button {
+    margin-bottom: 15px;
+}

@@ -16,12 +16,41 @@ import {Route, Routes} from "react-router-dom";
 import Footer from "./components/Footer.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import {UserDetails} from "./components/model/UserDetailsModel.ts";
+import {RevealModel} from "./components/model/RevealModel.ts";
 
 export default function App() {
 
     const [user, setUser] = useState<string>("anonymousUser");
     const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+    const [allReveals, setAllReveals] = useState<RevealModel[]>([]);
+    const [activeReveals, setActiveReveals] = useState<RevealModel[]>([]);
 
+
+    const getAllReveals = () => {
+        axios
+            .get("/api/reveal-hub")
+            .then((response) => {
+                setAllReveals(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching reveals: ", error);
+            });
+    }
+
+    const getActiveReveals = () => {
+        axios
+            .get("/api/reveal-hub/active")
+            .then((response) => {
+                setActiveReveals(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching active reveals: ", error);
+            });
+    }
+
+    const handleNewRevealSubmit = (newReveal: RevealModel) => {
+        setAllReveals((prevReveals) => [...prevReveals, newReveal]);
+    }
 
     function getUser() {
         axios.get("/api/users/me")
@@ -62,15 +91,15 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Welcome />} />
         <Route path="/play" element={<Play />} />
-        <Route path="/list-of-all-reveals" element={<ListOfAllReveals />} />
-        <Route path="/details/:id" element={<Details />} />
+        <Route path="/list-of-all-reveals" element={<ListOfAllReveals activeReveals={activeReveals} getActiveReveals={getActiveReveals}/>} />
+        <Route path="/reveal/:id" element={<Details />} />
         <Route path="/high-score" element={<HighScore />} />
 
         <Route element={<ProtectedRoute user={user} />}>
             <Route path="/favorites" element={<Favorites />} />
-            <Route path="/my-reveals" element={<MyReveals />} />
-            <Route path="/add" element={<AddRevealCard />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/my-reveals" element={<MyReveals allReveals={allReveals} getAllReveals={getAllReveals}/>} />
+            <Route path="/add" element={<AddRevealCard user={user} handleNewRevealSubmit={handleNewRevealSubmit}/>} />
+            <Route path="/profile" element={<Profile userDetails={userDetails}/>} />
         </Route>
       </Routes>
       <Footer/>

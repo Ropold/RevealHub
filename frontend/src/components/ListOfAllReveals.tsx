@@ -1,5 +1,17 @@
+import {RevealModel} from "./model/RevealModel.ts";
+import {useEffect} from "react";
 
-export default function ListOfAllReveals(){
+type ListOfAllRevealsProps = {
+    activeReveals: RevealModel[];
+    getActiveReveals: () => void;
+}
+
+export default function ListOfAllReveals(props: Readonly<ListOfAllRevealsProps>) {
+
+    useEffect(() => {
+        props.getActiveReveals()
+    }, []);
+
     return (
         <>
             <div>
