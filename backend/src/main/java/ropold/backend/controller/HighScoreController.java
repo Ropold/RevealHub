@@ -21,7 +21,7 @@ public class HighScoreController {
         return highScoreService.getBestHighScoresWithTime();
     }
 
-    @GetMapping("/reveal-over-clicks")
+    @GetMapping("/reveal-with-clicks")
     public List<HighScoreModel> getBestHighScoresWithClicks(){
         return highScoreService.getBestHighScoresWithClicks();
     }

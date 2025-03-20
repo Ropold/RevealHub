@@ -1,5 +1,6 @@
 package ropold.backend.controller;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ class HighScoreControllerIntegrationTest {
 
     @Test
     void getBestHighScoresWithClicks_shouldReturnClicksHighScore() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/high-score/reveal-over-clicks"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/high-score/reveal-with-clicks"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json("""
             [
@@ -64,6 +65,33 @@ class HighScoreControllerIntegrationTest {
             """));
     }
 
+    @Test
+    void getBestHighScoresWithTime_shouldReturnTimeHighScore() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/high-score/reveal-over-time"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json("""
+            [
+                {
+                    "id": "1",
+                    "playerName": "player1",
+                    "githubId": "123456",
+                    "category": "ANIMAL",
+                    "gameMode": "REVEAL_OVER_TIME",
+                    "scoreTime": 10.2,
+                    "numberOfClicks": 0,
+                    "date": "2025-03-05T12:00:00"
+                }
+            ]
+            """));
+    }
 
+
+    @Test
+    void deleteHighScore_shouldDeleteHighScore() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/high-score/1"))
+                .andExpect(status().isNoContent());
+        Assertions.assertEquals(1, highScoreRepository.count());
+        Assertions.assertTrue(highScoreRepository.existsById("2"));
+    }
 
 }
