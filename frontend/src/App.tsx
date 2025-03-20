@@ -99,7 +99,7 @@ export default function App() {
             <Route path="/favorites" element={<Favorites />} />
             <Route path="/my-reveals" element={<MyReveals allReveals={allReveals} getAllReveals={getAllReveals}/>} />
             <Route path="/add" element={<AddRevealCard user={user} handleNewRevealSubmit={handleNewRevealSubmit}/>} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<Profile userDetails={userDetails}/>} />
         </Route>
       </Routes>
       <Footer/>
