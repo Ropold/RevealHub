@@ -2,12 +2,22 @@ package ropold.backend.model;
 
 public enum Category {
     ANIMAL,
-    CITY,
+    ART,
     BUILDING,
-    FOOD,
-    TOOL,
-    SPORT,
-    MOVIE,
-    GAME,
     CARTOON,
+    COOKING,
+    CITY,
+    CLOTHING,
+    COUNTRY,
+    FOOD,
+    GAME,
+    INSTRUMENT,
+    MOVIE,
+    MUSIC,
+    PERSON,
+    PLANT,
+    SPORTS,
+    TOOL,
+    VEHICLE
 }
+
