@@ -115,7 +115,81 @@ class RevealControllerIntegrationTest {
             """));
     }
 
+    @Test
+    void addRevealToFavorites_shouldAddRevealAndReturnFavorites() throws Exception {
+        AppUser userBefore = appUserRepository.findById("user").orElseThrow();
+        Assertions.assertFalse(userBefore.favorites().contains("1"));
 
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/reveal-hub/favorites/1")
+                        .with(oidcLogin().idToken(i -> i.claim("sub", "user"))))
+                .andExpect(status().isCreated());
+
+        AppUser updatedUser = appUserRepository.findById("user").orElseThrow();
+        Assertions.assertTrue(updatedUser.favorites().contains("1"));
+    }
+
+    @Test
+    void removeRevealFromFavorites_shouldRemoveRevealAndReturnFavorites() throws Exception {
+        AppUser userBefore = appUserRepository.findById("user").orElseThrow();
+        Assertions.assertTrue(userBefore.favorites().contains("2"));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/reveal-hub/favorites/2")
+                        .with(oidcLogin().idToken(i -> i.claim("sub", "user")))
+                )
+                .andExpect(status().isNoContent()); // .isOk = 200, .isNoContent = 204
+
+        AppUser updatedUser = appUserRepository.findById("user").orElseThrow();
+        Assertions.assertFalse(updatedUser.favorites().contains("2"));
+    }
+
+    @Test
+    void ToggleActiveStatus_shouldToggleActiveStatus() throws Exception {
+        RevealModel memoryBefore = revealRepository.findById("1").orElseThrow();
+        Assertions.assertTrue(memoryBefore.isActive());
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/reveal-hub/1/toggle-active")
+                        .with(oidcLogin().idToken(i -> i.claim("sub", "user")))
+                )
+                .andExpect(status().isOk());
+
+        RevealModel updatedMemory = revealRepository.findById("1").orElseThrow();
+        Assertions.assertFalse(updatedMemory.isActive());
+    }
+
+    @Test
+    void getActiveRevealCategories_shouldReturnActiveRevealCategories() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub/active/categories")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                [
+                    "ANIMAL",
+                    "FOOD"
+                ]
+            """));
+    }
+
+    @Test
+    void getActiveRevealsByCategory_shouldReturnActiveRevealsByCategory() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub/active/category/ANIMAL")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                [
+                    {
+                        "id": "1",
+                        "name": "Bobby Brown",
+                        "solutionWords": ["word1", "word2", "word3"],
+                        "closeSolutionWords": ["closeWord1", "closeWord2"],
+                        "category": "ANIMAL",
+                        "description": "Sample description for the RevealModel.",
+                        "isActive": true,
+                        "githubId": "user",
+                        "imageUrl": "https://example.com/image1.jpg"
+                    }
+                ]
+            """));
+    }
 
     @Test
     void getAllReveals_shouldReturnAllReveals() throws Exception {
