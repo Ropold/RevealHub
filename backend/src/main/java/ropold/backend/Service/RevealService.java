@@ -80,4 +80,40 @@ public class RevealService {
         throw new RevealNotFoundException("No Reveal found with id: " + id);
     }
 
+    public List<RevealModel> getRevealsByIds(List<String> favoriteRevealIds) {
+        return revealRepository.findAllById(favoriteRevealIds);
+    }
+
+    public RevealModel toggleRevealActive(String id) {
+        RevealModel reveal = revealRepository.findById(id)
+                .orElseThrow(() -> new RevealNotFoundException("No Reveal found with id: " + id));
+
+        RevealModel updatedReveal = new RevealModel(
+                id,
+                reveal.name(),
+                reveal.solutionWords(),
+                reveal.closeSolutionWords(),
+                reveal.category(),
+                reveal.description(),
+                !reveal.isActive(),
+                reveal.githubId(),
+                reveal.imageUrl()
+        );
+        return revealRepository.save(updatedReveal);
+    }
+
+
+    public List<String> getActiveRevealCategories() {
+        return revealRepository.findAll().stream()
+                .filter(RevealModel::isActive) // Nur aktive Einträge filtern
+                .map(reveal -> reveal.category().name()) // Enum-Namen extrahieren
+                .distinct() // Doppelte Kategorien entfernen
+                .toList();
+    }
+
+    public List<RevealModel> getActiveRevealsByCategory(String category) {
+        return revealRepository.findAll().stream()
+                .filter(reveal -> reveal.isActive() && reveal.category().name().equals(category))
+                .toList();
+    }
 }

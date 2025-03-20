@@ -14,11 +14,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import ropold.backend.model.AppUser;
 import ropold.backend.model.Category;
 import ropold.backend.model.RevealModel;
+import ropold.backend.repository.AppUserRepository;
 import ropold.backend.repository.RevealRepository;
 
 import java.util.Collections;
@@ -30,8 +32,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -46,9 +47,13 @@ class RevealControllerIntegrationTest {
     @Autowired
     RevealRepository revealRepository;
 
+    @Autowired
+    private AppUserRepository appUserRepository;
+
     @BeforeEach
     void setup() {
         revealRepository.deleteAll();
+        appUserRepository.deleteAll();
 
         RevealModel revealModel1 = new RevealModel(
                 "1",
@@ -74,15 +79,123 @@ class RevealControllerIntegrationTest {
                 "https://example.com/image1.jpg"
         );
         revealRepository.saveAll(List.of(revealModel1, revealModel2));
+
+        AppUser user = new AppUser(
+                "user",
+                "username",
+                "Max Mustermann",
+                "https://github.com/avatar",
+                "https://github.com/mustermann",
+                List.of("2")
+        );
+        appUserRepository.save(user);
+    }
+
+    @Test
+    @WithMockUser(username = "user")
+    void getUserFavorites_shouldReturnUserFavorites() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub/favorites")
+                        .with(oidcLogin().idToken(i -> i.claim("sub", "user"))))
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                [
+                    {
+                        "id": "2",
+                        "name": "Johnny Cash",
+                        "solutionWords": ["Solution1", "Solution2"],
+                        "closeSolutionWords": ["Close Solution1", "Close Solution2"],
+                        "category": "FOOD",
+                        "description": "A brief description",
+                        "isActive": true,
+                        "githubId": "user",
+                        "imageUrl": "https://example.com/image1.jpg"
+                    }
+                ]
+            """));
+    }
+
+    @Test
+    void addRevealToFavorites_shouldAddRevealAndReturnFavorites() throws Exception {
+        AppUser userBefore = appUserRepository.findById("user").orElseThrow();
+        Assertions.assertFalse(userBefore.favorites().contains("1"));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/reveal-hub/favorites/1")
+                        .with(oidcLogin().idToken(i -> i.claim("sub", "user"))))
+                .andExpect(status().isCreated());
+
+        AppUser updatedUser = appUserRepository.findById("user").orElseThrow();
+        Assertions.assertTrue(updatedUser.favorites().contains("1"));
+    }
+
+    @Test
+    void removeRevealFromFavorites_shouldRemoveRevealAndReturnFavorites() throws Exception {
+        AppUser userBefore = appUserRepository.findById("user").orElseThrow();
+        Assertions.assertTrue(userBefore.favorites().contains("2"));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/reveal-hub/favorites/2")
+                        .with(oidcLogin().idToken(i -> i.claim("sub", "user")))
+                )
+                .andExpect(status().isNoContent()); // .isOk = 200, .isNoContent = 204
+
+        AppUser updatedUser = appUserRepository.findById("user").orElseThrow();
+        Assertions.assertFalse(updatedUser.favorites().contains("2"));
+    }
+
+    @Test
+    void ToggleActiveStatus_shouldToggleActiveStatus() throws Exception {
+        RevealModel memoryBefore = revealRepository.findById("1").orElseThrow();
+        Assertions.assertTrue(memoryBefore.isActive());
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/reveal-hub/1/toggle-active")
+                        .with(oidcLogin().idToken(i -> i.claim("sub", "user")))
+                )
+                .andExpect(status().isOk());
+
+        RevealModel updatedMemory = revealRepository.findById("1").orElseThrow();
+        Assertions.assertFalse(updatedMemory.isActive());
+    }
+
+    @Test
+    void getActiveRevealCategories_shouldReturnActiveRevealCategories() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub/active/categories")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                [
+                    "ANIMAL",
+                    "FOOD"
+                ]
+            """));
+    }
+
+    @Test
+    void getActiveRevealsByCategory_shouldReturnActiveRevealsByCategory() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub/active/category/ANIMAL")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                [
+                    {
+                        "id": "1",
+                        "name": "Bobby Brown",
+                        "solutionWords": ["word1", "word2", "word3"],
+                        "closeSolutionWords": ["closeWord1", "closeWord2"],
+                        "category": "ANIMAL",
+                        "description": "Sample description for the RevealModel.",
+                        "isActive": true,
+                        "githubId": "user",
+                        "imageUrl": "https://example.com/image1.jpg"
+                    }
+                ]
+            """));
     }
 
     @Test
     void getAllReveals_shouldReturnAllReveals() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub")
                 )
-
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("""
+                .andExpect(content().json("""
                 [
                     {
                         "id": "1",
@@ -116,7 +229,7 @@ class RevealControllerIntegrationTest {
                         .with(oidcLogin().idToken(i -> i.claim("sub", "user")))
                 )
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("""
+                .andExpect(content().json("""
                 [
                     {
                         "id": "1",
@@ -192,7 +305,7 @@ class RevealControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub/active")
                 )
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("""
+                .andExpect(content().json("""
                 [
                     {
                         "id": "1",
@@ -225,7 +338,7 @@ class RevealControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub/1")
                 )
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("""
+                .andExpect(content().json("""
                 {
                     "id": "1",
                     "name": "Bobby Brown",

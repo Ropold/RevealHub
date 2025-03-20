@@ -136,5 +136,60 @@ class RevealServiceTest {
         verify(revealRepository, times(1)).save(updatedRevealModel);
     }
 
+    @Test
+    void getRevealsByIds_shouldReturnReveals() {
+        List<String> favoriteRevealIds = List.of("1", "2");
+        List<RevealModel> expected = List.of(revealModels.get(0), revealModels.get(1));
+        when(revealRepository.findAllById(favoriteRevealIds)).thenReturn(expected);
+
+        List<RevealModel> result = revealService.getRevealsByIds(favoriteRevealIds);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void toggleRevealActive_shouldReturnUpdatedReveal() {
+        //given
+        RevealModel revealModel = revealModels.getFirst();
+        when(revealRepository.findById("1")).thenReturn(java.util.Optional.of(revealModel));
+
+        RevealModel updatedReveal = new RevealModel(
+                "1",
+                "Bobby Brown",
+                List.of("word1", "word2", "word3"),
+                List.of("closeWord1", "closeWord2"),
+                Category.ANIMAL,
+                "Sample description for the RevealModel.",
+                false,
+                "user",
+                "https://example.com/image1.jpg"
+        );
+
+        when(revealRepository.findById("1")).thenReturn(java.util.Optional.of(revealModel));
+        when(revealRepository.save(any(RevealModel.class))).thenReturn(updatedReveal);
+
+        //when
+        RevealModel expected = revealService.toggleRevealActive("1");
+
+        //then
+        assertEquals(updatedReveal, expected);
+        verify(revealRepository, times(1)).findById("1");
+        verify(revealRepository, times(1)).save(updatedReveal);
+    }
+
+    @Test
+    void getActiveRevealCategories_shouldReturnListOfActiveCategories() {
+        List<String> expected = List.of("ANIMAL", "FOOD");
+        List<String> result = revealService.getActiveRevealCategories();
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void getActiveRevealsByCategory_shouldReturnFilteredList() {
+        List<RevealModel> result = revealService.getActiveRevealsByCategory("ANIMAL");
+        List<RevealModel> expected = revealModels.stream()
+                .filter(r -> r.category() == Category.ANIMAL && r.isActive())
+                .toList();
+        assertEquals(expected, result);
+    }
 
 }

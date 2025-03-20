@@ -92,7 +92,7 @@ export default function App() {
         <Route path="/" element={<Welcome />} />
         <Route path="/play" element={<Play />} />
         <Route path="/list-of-all-reveals" element={<ListOfAllReveals activeReveals={activeReveals} getActiveReveals={getActiveReveals}/>} />
-        <Route path="/reveal/:id" element={<Details />} />
+        <Route path="/reveal/:id" element={<Details user={user}/>} />
         <Route path="/high-score" element={<HighScore />} />
 
         <Route element={<ProtectedRoute user={user} />}>
