@@ -150,7 +150,7 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
 
                     {/* solutionWords */}
                     <label className="label-solution-words">
-                        Solution Words:
+                        Solution-Words:
                         {solutionWords.map((word, index) => (
                             <input
                                 key={index}
@@ -161,13 +161,13 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
                             />
                         ))}
                         <button type="button" className="solution-words-button" onClick={handleAddSolutionWord}>
-                            Add More Solution Words
+                            Extend Words
                         </button>
                     </label>
 
                     {/* closeSolutionWords */}
                     <label className="label-solution-words">
-                        Close Solution Words:
+                        Close-Solution-Words:
                         {closeSolutionWords.map((word, index) => (
                             <input
                                 key={index}
@@ -178,7 +178,7 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
                             />
                         ))}
                         <button type="button" className="solution-words-button" onClick={handleAddCloseSolutionWord}>
-                            Add More Close Solution Words
+                            Extend Close-Words
                         </button>
                     </label>
 
