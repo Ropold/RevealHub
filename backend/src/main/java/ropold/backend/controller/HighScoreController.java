@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ropold.backend.Service.HighScoreService;
-import ropold.backend.Service.IdService;
 import ropold.backend.model.HighScoreModel;
 
 import java.util.List;
