@@ -85,6 +85,51 @@ class HighScoreControllerIntegrationTest {
             """));
     }
 
+    @Test
+    void postHighScore_shouldReturnSavedHighScore() throws Exception {
+        // GIVEN
+        highScoreRepository.deleteAll();
+
+        String highScoreJson = """
+        {
+            "playerName": "player1",
+            "githubId": "123456",
+            "category": "ANIMAL",
+            "gameMode": "REVEAL_OVER_TIME",
+            "scoreTime": 9.5,
+            "numberOfClicks": 0,
+            "date": "2025-03-05T12:00:00"
+        }
+        """;
+
+        // WHEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/high-score")
+                        .contentType("application/json")
+                        .content(highScoreJson))
+                .andExpect(status().isCreated());
+
+        // THEN
+        List<HighScoreModel> allHighScores = highScoreRepository.findAll();
+        Assertions.assertEquals(1, allHighScores.size());
+
+        HighScoreModel savedHighScore = allHighScores.getFirst();
+
+        org.assertj.core.api.Assertions.assertThat(savedHighScore)
+                .usingRecursiveComparison()
+                .ignoringFields("id", "date")
+                .isEqualTo(new HighScoreModel(
+                        null,
+                        "player1",
+                        "123456",
+                        Category.ANIMAL,
+                        GameMode.REVEAL_OVER_TIME,
+                        9.5,
+                        0,
+                        null
+                ));
+    }
+
+
 
     @Test
     void deleteHighScore_shouldDeleteHighScore() throws Exception {
