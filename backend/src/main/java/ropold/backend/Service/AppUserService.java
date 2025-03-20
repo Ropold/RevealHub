@@ -23,4 +23,21 @@ public class AppUserService {
         return user.favorites();
     }
 
+    public void addRevealToFavorites(String authenticatedUserId, String revealId) {
+        AppUser user = getUserById(authenticatedUserId);
+
+        if (!user.favorites().contains(revealId)) {
+            user.favorites().add(revealId);
+            appUserRepository.save(user);
+        }
+    }
+
+    public void removeRevealFromFavorites(String authenticatedUserId, String revealId) {
+        AppUser user = getUserById(authenticatedUserId);
+
+        if (user.favorites().contains(revealId)) {
+            user.favorites().remove(revealId);
+            appUserRepository.save(user);
+        }
+    }
 }

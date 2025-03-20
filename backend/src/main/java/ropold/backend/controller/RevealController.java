@@ -7,6 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ropold.backend.Service.AppUserService;
 import ropold.backend.Service.CloudinaryService;
 import ropold.backend.Service.RevealService;
 import ropold.backend.exception.AccessDeniedException;
@@ -24,10 +25,51 @@ public class RevealController {
 
     private final RevealService revealService;
     private final CloudinaryService cloudinaryService;
+    private final AppUserService appUserService;
 
     @GetMapping
     public List<RevealModel> getAllReveals() {
         return revealService.getAllReveals();
+    }
+
+    @GetMapping("/active/category/{category}")
+    public List<RevealModel> getActiveRevealsByCategory(@PathVariable String category) {
+        return revealService.getActiveRevealsByCategory(category);
+    }
+
+    @GetMapping("/active/categories")
+    public List<String> getActiveRevealCategories() {
+        return revealService.getActiveRevealCategories();
+    }
+
+    @GetMapping("/favorites")
+    public List<RevealModel> getUserFavorites(@AuthenticationPrincipal OAuth2User authentication) {
+        List<String> favoriteRevealIds = appUserService.getUserFavorites(authentication.getName());
+        return revealService.getRevealsByIds(favoriteRevealIds);
+    }
+
+    @PostMapping("/favorites/{revealId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addRevealToFavorites(@PathVariable String revealId, @AuthenticationPrincipal OAuth2User authentication) {
+        String authenticatedUserId = authentication.getName();
+        appUserService.addRevealToFavorites(authenticatedUserId, revealId);
+    }
+
+    @DeleteMapping("/favorites/{revealId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeRevealFromFavorites(@PathVariable String revealId, @AuthenticationPrincipal OAuth2User authentication) {
+        String authenticatedUserId = authentication.getName();
+        appUserService.removeRevealFromFavorites(authenticatedUserId, revealId);
+    }
+
+    @PutMapping("/{id}/toggle-active")
+    public RevealModel toggleRevealActive(@PathVariable String id, @AuthenticationPrincipal OAuth2User authentication) {
+        String authenticatedUserId = authentication.getName();
+        RevealModel reveal = revealService.getRevealById(id);
+        if (!reveal.githubId().equals(authenticatedUserId)) {
+            throw new AccessDeniedException("You are not allowed to toggle this reveal");
+        }
+        return revealService.toggleRevealActive(id);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
