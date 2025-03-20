@@ -129,7 +129,95 @@ class HighScoreControllerIntegrationTest {
                 ));
     }
 
+    @Test
+    void postHighScore_withHighTime_shouldNotSave() throws Exception {
 
+        highScoreRepository.deleteAll();
+
+        LocalDateTime fixedDate = LocalDateTime.of(2025, 3, 5, 12, 0, 0);
+
+        List<HighScoreModel> existingScores = List.of(
+                new HighScoreModel("1", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_OVER_TIME, 10.2, 0, fixedDate),
+                new HighScoreModel("2", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_OVER_TIME, 10.5, 0, fixedDate),
+                new HighScoreModel("3", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_OVER_TIME, 10.7, 0, fixedDate),
+                new HighScoreModel("4", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_OVER_TIME, 11.0, 0, fixedDate),
+                new HighScoreModel("5", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_OVER_TIME, 11.2, 0, fixedDate),
+                new HighScoreModel("6", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_OVER_TIME, 11.5, 0, fixedDate),
+                new HighScoreModel("7", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_OVER_TIME, 11.7, 0, fixedDate),
+                new HighScoreModel("8", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_OVER_TIME, 12.0, 0, fixedDate),
+                new HighScoreModel("9", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_OVER_TIME, 12.2, 0, fixedDate),
+                new HighScoreModel("10", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_OVER_TIME, 12.5, 0, fixedDate)
+        );
+
+        highScoreRepository.saveAll(existingScores);
+        Assertions.assertEquals(10, highScoreRepository.count());
+
+        String highScoreJson = """
+        {
+            "playerName": "player1",
+            "githubId": "123456",
+            "category": "ANIMAL",
+            "gameMode": "REVEAL_OVER_TIME",
+            "scoreTime": 12.6,
+            "numberOfClicks": 0,
+            "date": "2025-03-05T12:00:00"
+        }
+        """;
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/high-score")
+                        .contentType("application/json")
+                        .content(highScoreJson))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.content().string(""));
+
+
+        List<HighScoreModel> allHighScores = highScoreRepository.findAll();
+        Assertions.assertEquals(10, allHighScores.size());
+    }
+
+    @Test
+    void postHighScore_withHighClick_shouldNotSave() throws Exception {
+        highScoreRepository.deleteAll();
+
+        LocalDateTime fixedDate = LocalDateTime.of(2025, 3, 5, 12, 0, 0);
+
+        List<HighScoreModel> existingScores = List.of(
+                new HighScoreModel("1", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_WITH_CLICKS, 10.2, 0, fixedDate),
+                new HighScoreModel("2", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_WITH_CLICKS, 10.5, 1, fixedDate),
+                new HighScoreModel("3", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_WITH_CLICKS, 10.7, 2, fixedDate),
+                new HighScoreModel("4", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_WITH_CLICKS, 11.0, 3, fixedDate),
+                new HighScoreModel("5", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_WITH_CLICKS, 11.2, 4, fixedDate),
+                new HighScoreModel("6", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_WITH_CLICKS, 11.5, 5, fixedDate),
+                new HighScoreModel("7", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_WITH_CLICKS, 11.7, 6, fixedDate),
+                new HighScoreModel("8", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_WITH_CLICKS, 12.0, 7, fixedDate),
+                new HighScoreModel("9", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_WITH_CLICKS, 12.2, 8, fixedDate),
+                new HighScoreModel("10", "player1", "123456", Category.ANIMAL, GameMode.REVEAL_WITH_CLICKS, 12.5, 9, fixedDate)
+        );
+
+        highScoreRepository.saveAll(existingScores);
+        Assertions.assertEquals(10, highScoreRepository.count());
+
+        String highScoreJson = """
+        {
+            "playerName": "player1",
+            "githubId": "123456",
+            "category": "ANIMAL",
+            "gameMode": "REVEAL_WITH_CLICKS",
+            "scoreTime": 12.6,
+            "numberOfClicks": 12,
+            "date": "2025-03-05T12:00:00"
+        }
+        """;
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/high-score")
+                        .contentType("application/json")
+                        .content(highScoreJson))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.content().string(""));
+
+        List<HighScoreModel> allHighScores = highScoreRepository.findAll();
+        Assertions.assertEquals(10, allHighScores.size());
+    }
 
     @Test
     void deleteHighScore_shouldDeleteHighScore() throws Exception {

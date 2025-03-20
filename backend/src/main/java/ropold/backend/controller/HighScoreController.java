@@ -17,8 +17,8 @@ public class HighScoreController {
     private final HighScoreService highScoreService;
 
     @GetMapping("/reveal-over-time")
-    public List<HighScoreModel> getBestHighScoresWithTime(){
-        return highScoreService.getBestHighScoresWithTime();
+    public List<HighScoreModel> getBestHighScoresOverTime(){
+        return highScoreService.getBestHighScoresOverTime();
     }
 
     @GetMapping("/reveal-with-clicks")

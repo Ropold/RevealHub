@@ -16,7 +16,7 @@ public class HighScoreService {
     private final HighScoreRepository highScoreRepository;
     private final IdService idService;
 
-    public List<HighScoreModel> getBestHighScoresWithTime() {
+    public List<HighScoreModel> getBestHighScoresOverTime() {
         return highScoreRepository.findByGameModeOrderByScoreTimeAsc(GameMode.REVEAL_OVER_TIME);
     }
 
