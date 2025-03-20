@@ -14,11 +14,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import ropold.backend.model.AppUser;
 import ropold.backend.model.Category;
 import ropold.backend.model.RevealModel;
+import ropold.backend.repository.AppUserRepository;
 import ropold.backend.repository.RevealRepository;
 
 import java.util.Collections;
@@ -30,8 +33,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -46,9 +48,13 @@ class RevealControllerIntegrationTest {
     @Autowired
     RevealRepository revealRepository;
 
+    @Autowired
+    private AppUserRepository appUserRepository;
+
     @BeforeEach
     void setup() {
         revealRepository.deleteAll();
+        appUserRepository.deleteAll();
 
         RevealModel revealModel1 = new RevealModel(
                 "1",
@@ -74,15 +80,49 @@ class RevealControllerIntegrationTest {
                 "https://example.com/image1.jpg"
         );
         revealRepository.saveAll(List.of(revealModel1, revealModel2));
+
+        AppUser user = new AppUser(
+                "user",
+                "username",
+                "Max Mustermann",
+                "https://github.com/avatar",
+                "https://github.com/mustermann",
+                List.of("2")
+        );
+        appUserRepository.save(user);
     }
+
+    @Test
+    @WithMockUser(username = "user")
+    void getUserFavorites_shouldReturnUserFavorites() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub/favorites")
+                        .with(oidcLogin().idToken(i -> i.claim("sub", "user"))))
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                [
+                    {
+                        "id": "2",
+                        "name": "Johnny Cash",
+                        "solutionWords": ["Solution1", "Solution2"],
+                        "closeSolutionWords": ["Close Solution1", "Close Solution2"],
+                        "category": "FOOD",
+                        "description": "A brief description",
+                        "isActive": true,
+                        "githubId": "user",
+                        "imageUrl": "https://example.com/image1.jpg"
+                    }
+                ]
+            """));
+    }
+
+
 
     @Test
     void getAllReveals_shouldReturnAllReveals() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub")
                 )
-
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("""
+                .andExpect(content().json("""
                 [
                     {
                         "id": "1",
@@ -116,7 +156,7 @@ class RevealControllerIntegrationTest {
                         .with(oidcLogin().idToken(i -> i.claim("sub", "user")))
                 )
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("""
+                .andExpect(content().json("""
                 [
                     {
                         "id": "1",
@@ -192,7 +232,7 @@ class RevealControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub/active")
                 )
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("""
+                .andExpect(content().json("""
                 [
                     {
                         "id": "1",
@@ -225,7 +265,7 @@ class RevealControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/reveal-hub/1")
                 )
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("""
+                .andExpect(content().json("""
                 {
                     "id": "1",
                     "name": "Bobby Brown",
