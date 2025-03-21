@@ -105,6 +105,40 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
         }
     };
 
+    const handleSolutionWordChange = (index: number, value: string) => {
+        if (editData) {
+            const updatedSolutionWords = [...editData.solutionWords];
+            updatedSolutionWords[index] = value;
+            setEditData({ ...editData, solutionWords: updatedSolutionWords });
+        }
+    };
+
+    const handleAddSolutionWord = () => {
+        if (editData) {
+            setEditData({
+                ...editData,
+                solutionWords: [...editData.solutionWords, ""],
+            });
+        }
+    };
+
+    const handleCloseSolutionWordChange = (index: number, value: string) => {
+        if (editData) {
+            const updatedCloseSolutionWords = [...editData.closeSolutionWords];
+            updatedCloseSolutionWords[index] = value;
+            setEditData({ ...editData, closeSolutionWords: updatedCloseSolutionWords });
+        }
+    };
+
+    const handleAddCloseSolutionWord = () => {
+        if (editData) {
+            setEditData({
+                ...editData,
+                closeSolutionWords: [...editData.closeSolutionWords, ""],
+            });
+        }
+    };
+
     const handleDeleteClick = (id: string) => {
         setRevealToDelete(id);
         setShowPopup(true);
@@ -147,7 +181,7 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                                 className="input-small"
                                 type="text"
                                 value={editData?.name || ""}
-                                onChange={(e) => setEditData({...editData!, name: e.target.value})}
+                                onChange={(e) => setEditData({ ...editData!, name: e.target.value })}
                             />
                         </label>
 
@@ -156,7 +190,7 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                             <textarea
                                 className="textarea-large"
                                 value={editData?.description || ""}
-                                onChange={(e) => setEditData({...editData!, description: e.target.value})}
+                                onChange={(e) => setEditData({ ...editData!, description: e.target.value })}
                             />
                         </label>
 
@@ -165,12 +199,13 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                             <select
                                 className="input-small"
                                 value={editData?.category || ""}
-                                onChange={(e) => setEditData({...editData!, category: e.target.value as Category})}
+                                onChange={(e) => setEditData({ ...editData!, category: e.target.value as Category })}
                             >
-                                {(["ANIMAL", "ART", "BUILDING", "CARTOON", "COOKING", "CITY", "CLOTHING", "COUNTRY", "FOOD", "GAME", "INSTRUMENT", "MOVIE", "MUSIC", "PERSON", "PLANT", "SPORTS", "TOOL", "VEHICLE"] as Category[])
-                                    .map((cat) => (
-                                        <option key={cat} value={cat}>{cat}</option>
-                                    ))}
+                                {(["ANIMAL", "ART", "BUILDING", "CARTOON", "COOKING", "CITY", "CLOTHING", "COUNTRY", "FOOD", "GAME", "INSTRUMENT", "MOVIE", "MUSIC", "PERSON", "PLANT", "SPORTS", "TOOL", "VEHICLE"] as Category[]).map((cat) => (
+                                    <option key={cat} value={cat}>
+                                        {cat}
+                                    </option>
+                                ))}
                             </select>
                         </label>
 
@@ -179,22 +214,60 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                             <select
                                 className="input-small"
                                 value={editData?.isActive ? "true" : "false"}
-                                onChange={(e) => setEditData({...editData!, isActive: e.target.value === "true"})}
+                                onChange={(e) => setEditData({ ...editData!, isActive: e.target.value === "true" })}
                             >
                                 <option value="true">Active</option>
                                 <option value="false">Inactive</option>
                             </select>
                         </label>
 
+                        {/* solutionWords */}
+                        <label>
+                            Solution Words:
+                            {editData?.solutionWords.map((word, index) => (
+                                <input
+                                    key={index}
+                                    className="input-small"
+                                    type="text"
+                                    value={word}
+                                    onChange={(e) => handleSolutionWordChange(index, e.target.value)}
+                                />
+                            ))}
+                            <button type="button" onClick={handleAddSolutionWord}>
+                                Add Solution Word
+                            </button>
+                        </label>
+
+                        {/* closeSolutionWords */}
+                        <label>
+                            Close Solution Words:
+                            {editData?.closeSolutionWords.map((word, index) => (
+                                <input
+                                    key={index}
+                                    className="input-small"
+                                    type="text"
+                                    value={word}
+                                    onChange={(e) => handleCloseSolutionWordChange(index, e.target.value)}
+                                />
+                            ))}
+                            <button type="button" onClick={handleAddCloseSolutionWord}>
+                                Add Close Solution Word
+                            </button>
+                        </label>
+
                         <label>
                             Image:
-                            <input type="file" onChange={onFileChange}/>
-                            {image && <img src={URL.createObjectURL(image)} alt={editData?.name || "Image"} className="reveal-card-image"/>}
+                            <input type="file" onChange={onFileChange} />
+                            {image && <img src={URL.createObjectURL(image)} alt={editData?.name || "Image"} className="reveal-card-image" />}
                         </label>
 
                         <div className="space-between">
-                            <button className="button-group-button" type="submit">Save Changes</button>
-                            <button className="button-group-button" type="button" onClick={() => setIsEditing(false)}>Cancel</button>
+                            <button className="button-group-button" type="submit">
+                                Save Changes
+                            </button>
+                            <button className="button-group-button" type="button" onClick={() => setIsEditing(false)}>
+                                Cancel
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -216,8 +289,12 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                                     >
                                         {r.isActive ? "Active" : "Inactive"}
                                     </button>
-                                    <button className="button-group-button" onClick={() => handleEditToggle(r.id)}>Edit</button>
-                                    <button id="button-delete" onClick={() => handleDeleteClick(r.id)}>Delete</button>
+                                    <button className="button-group-button" onClick={() => handleEditToggle(r.id)}>
+                                        Edit
+                                    </button>
+                                    <button id="button-delete" onClick={() => handleDeleteClick(r.id)}>
+                                        Delete
+                                    </button>
                                 </div>
                             </div>
                         ))
