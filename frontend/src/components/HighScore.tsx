@@ -75,8 +75,8 @@ export default function HighScore(props: Readonly<HighScoreProps>) {
                 <tr>
                     <th>Rank</th>
                     <th>Player</th>
-                    <th>Clicks</th>
-                    <th>Time</th>
+                    {cardType === "WithClicks" && <th>Clicks</th>}
+                    {cardType === "OverTime" && <th>Time</th>}
                 </tr>
                 </thead>
                 <tbody>
@@ -84,8 +84,8 @@ export default function HighScore(props: Readonly<HighScoreProps>) {
                     <tr key={highScore.id}>
                         <td>{index + 1}</td>
                         <td>{highScore.playerName}</td>
-                        <td>{highScore.numberOfClicks}</td>
-                        <td>{highScore.scoreTime}</td>
+                        {cardType === "WithClicks" && <td>{highScore.numberOfClicks}</td>}
+                        {cardType === "OverTime" && <td>{highScore.scoreTime}</td>}
                     </tr>
                 ))}
                 </tbody>
