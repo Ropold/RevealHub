@@ -26,3 +26,21 @@
 .solution-word-button {
     margin-bottom: 15px;
 }
+
+.favorite-on {
+    color: red;
+}
+
+.favorite-off {
+    color: #999;
+}
+
+#button-favorite-reveal-card {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    outline: none;
+}

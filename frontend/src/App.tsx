@@ -28,8 +28,9 @@ export default function App() {
     const [activeReveals, setActiveReveals] = useState<RevealModel[]>([]);
     const [highScoresOverTime, setHighScoresOverTime] = useState<HighScoreModel[]>([]);
     const [highScoresWithClicks, setHighScoresWithClicks] = useState<HighScoreModel[]>([]);
+    const [favorites, setFavorites] = useState<string[]>([]);
 
-
+    //Reveal functions
     const getAllReveals = () => {
         axios
             .get("/api/reveal-hub")
@@ -56,6 +57,7 @@ export default function App() {
         setAllReveals((prevReveals) => [...prevReveals, newReveal]);
     }
 
+    // User functions
     function getUser() {
         axios.get("/api/users/me")
             .then((response) => {
@@ -78,6 +80,38 @@ export default function App() {
             });
     }
 
+    function getAppUserFavorites(){
+        axios.get<RevealModel[]>(`/api/reveal-hub/favorites`)
+            .then((response) => {
+                const favoriteIds = response.data.map((memory) => memory.id);
+                setFavorites(favoriteIds);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+    function toggleFavorite(revealId: string) {
+        const isFavorite = favorites.includes(revealId);
+
+        if (isFavorite) {
+            axios.delete(`/api/reveal-hub/favorites/${revealId}`)
+                .then(() => {
+                    setFavorites((prevFavorites) =>
+                        prevFavorites.filter((id) => id !== revealId)
+                    );
+                })
+                .catch((error) => console.error(error));
+        } else {
+            axios.post(`/api/reveal-hub/favorites/${revealId}`)
+                .then(() => {
+                    setFavorites((prevFavorites) => [...prevFavorites, revealId]);
+                })
+                .catch((error) => console.error(error));
+        }
+    }
+
+    // HighScore functions
     const getHighScoresOverTime = () => {
         axios
             .get("/api/high-score/reveal-over-time")
@@ -107,8 +141,13 @@ export default function App() {
     useEffect(() => {
         if (user !== "anonymousUser") {
             getUserDetails();
+            getAppUserFavorites();
         }
     }, [user]);
+
+    useEffect(() => {
+        window.scroll(0, 0);
+    }, [location]);
 
   return (
     <>
@@ -117,12 +156,12 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Welcome />} />
         <Route path="/play" element={<Play />} />
-        <Route path="/list-of-all-reveals" element={<ListOfAllReveals activeReveals={activeReveals} getActiveReveals={getActiveReveals}/>} />
+        <Route path="/list-of-all-reveals" element={<ListOfAllReveals activeReveals={activeReveals} getActiveReveals={getActiveReveals} favorites={favorites} toggleFavorite={toggleFavorite} user={user}/>} />
         <Route path="/reveal/:id" element={<Details user={user}/>} />
         <Route path="/high-score" element={<HighScore highScoresOverTime={highScoresOverTime} highScoresWithClicks={highScoresWithClicks} getHighScoresOverTime={getHighScoresOverTime} getHighScoresWithClicks={getHighScoresWithClicks}/>} />
 
         <Route element={<ProtectedRoute user={user} />}>
-            <Route path="/favorites" element={<Favorites />} />
+            <Route path="/favorites" element={<Favorites favorites={favorites} user={user} toggleFavorite={toggleFavorite}/>} />
             <Route path="/my-reveals" element={<MyReveals allReveals={allReveals} getAllReveals={getAllReveals}/>} />
             <Route path="/add" element={<AddRevealCard user={user} handleNewRevealSubmit={handleNewRevealSubmit}/>} />
             <Route path="/profile" element={<Profile userDetails={userDetails}/>} />
