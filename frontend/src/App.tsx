@@ -162,7 +162,7 @@ export default function App() {
 
         <Route element={<ProtectedRoute user={user} />}>
             <Route path="/favorites" element={<Favorites favorites={favorites} user={user} toggleFavorite={toggleFavorite}/>} />
-            <Route path="/my-reveals" element={<MyReveals allReveals={allReveals} getAllReveals={getAllReveals}/>} />
+            <Route path="/my-reveals" element={<MyReveals allReveals={allReveals} getAllReveals={getAllReveals} setAllReveals={setAllReveals} user={user} favorites={favorites} toggleFavorite={toggleFavorite}/>} />
             <Route path="/add" element={<AddRevealCard user={user} handleNewRevealSubmit={handleNewRevealSubmit}/>} />
             <Route path="/profile" element={<Profile userDetails={userDetails}/>} />
         </Route>
