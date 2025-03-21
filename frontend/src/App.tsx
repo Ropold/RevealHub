@@ -17,6 +17,8 @@ import Footer from "./components/Footer.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import {UserDetails} from "./components/model/UserDetailsModel.ts";
 import {RevealModel} from "./components/model/RevealModel.ts";
+import {HighScoreModel} from "./components/model/HighScoreModel.ts";
+
 
 export default function App() {
 
@@ -24,6 +26,8 @@ export default function App() {
     const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
     const [allReveals, setAllReveals] = useState<RevealModel[]>([]);
     const [activeReveals, setActiveReveals] = useState<RevealModel[]>([]);
+    const [highScoresOverTime, setHighScoresOverTime] = useState<HighScoreModel[]>([]);
+    const [highScoresWithClicks, setHighScoresWithClicks] = useState<HighScoreModel[]>([]);
 
 
     const getAllReveals = () => {
@@ -74,6 +78,28 @@ export default function App() {
             });
     }
 
+    const getHighScoresOverTime = () => {
+        axios
+            .get("/api/high-score/reveal-over-time")
+            .then((response) => {
+                setHighScoresOverTime(response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+    const getHighScoresWithClicks = () => {
+        axios
+            .get("/api/high-score/reveal-with-clicks")
+            .then((response) => {
+                setHighScoresWithClicks(response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
     useEffect(() => {
         getUser();
     }, []);
@@ -93,7 +119,7 @@ export default function App() {
         <Route path="/play" element={<Play />} />
         <Route path="/list-of-all-reveals" element={<ListOfAllReveals activeReveals={activeReveals} getActiveReveals={getActiveReveals}/>} />
         <Route path="/reveal/:id" element={<Details user={user}/>} />
-        <Route path="/high-score" element={<HighScore />} />
+        <Route path="/high-score" element={<HighScore highScoresOverTime={highScoresOverTime} highScoresWithClicks={highScoresWithClicks} getHighScoresOverTime={getHighScoresOverTime} getHighScoresWithClicks={getHighScoresWithClicks}/>} />
 
         <Route element={<ProtectedRoute user={user} />}>
             <Route path="/favorites" element={<Favorites />} />

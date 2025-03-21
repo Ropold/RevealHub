@@ -1,14 +1,19 @@
 export type Category =
     "ANIMAL" |
-    "CITY" |
+    "ART" |
     "BUILDING" |
+    "CARTOON" |
+    "COOKING" |
+    "CITY" |
+    "CLOTHING" |
+    "COUNTRY" |
     "FOOD" |
-    "TOOL" |
-    "SPORT" |
-    "MOVIE" |
     "GAME" |
-    "CARTOON";
-
-
-
-
+    "INSTRUMENT" |
+    "MOVIE" |
+    "MUSIC" |
+    "PERSON" |
+    "PLANT" |
+    "SPORTS" |
+    "TOOL" |
+    "VEHICLE";
