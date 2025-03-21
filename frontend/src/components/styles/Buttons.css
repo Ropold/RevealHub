@@ -44,3 +44,29 @@
     font-size: 24px;
     outline: none;
 }
+
+/* Delete-Button */
+#button-delete {
+    background-color: #ff9999;
+}
+
+#button-delete:hover {
+    background-color: #d32f2f;
+}
+
+/* Aktiv- und Offline-Buttons */
+#active-button {
+    background-color: #66bb6a;
+}
+
+#active-button:hover {
+    background-color: #388e3c;
+}
+
+#inactive-button {
+    background-color: #999;
+}
+
+#inactive-button:hover {
+    background-color: #555;
+}

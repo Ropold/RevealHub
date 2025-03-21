@@ -4,6 +4,8 @@ import axios from "axios";
 import RevealCard from "./RevealCard.tsx";
 import {Category} from "./model/Category.ts";
 import * as React from "react";
+import "./styles/Buttons.css"
+import "./styles/RevealCard.css"
 
 type MyRevealsProps = {
     allReveals: RevealModel[];
@@ -40,6 +42,21 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
         }
     };
 
+    const handleToggleActiveStatus = (memoryId: string) => {
+        axios
+            .put(`/api/reveal-hub/${memoryId}/toggle-active`)
+            .then(() => {
+                props.setAllReveals((prevReveals) =>
+                    prevReveals.map((r) =>
+                        r.id === memoryId ? { ...r, isActive: !r.isActive } : r
+                    )
+                );
+            })
+            .catch((error) => {
+                console.error("Error during Toggle Offline/Active", error);
+                alert("An Error while changing the status of Active/Offline.");
+            });
+    };
 
     // Handle form submission to save the changes
     const handleSaveEdit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -69,13 +86,12 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                 },
             })
             .then((response) => {
-                console.log("Antwort vom Server:", response.data);
                 props.setAllReveals((prevReveals) =>
                     prevReveals.map((reveal) =>
                         reveal.id === editData.id ? {...reveal, ...response.data} : reveal
                     )
                 );
-                setIsEditing(false);  // Exit edit mode
+                setIsEditing(false);
             })
             .catch((error) => {
                 console.error("Error saving reveal edits:", error);
@@ -173,12 +189,12 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                         <label>
                             Image:
                             <input type="file" onChange={onFileChange}/>
-                            {image && <img src={URL.createObjectURL(image)} className="reveal-card-image"/>}
+                            {image && <img src={URL.createObjectURL(image)} alt={editData?.name || "Image"} className="reveal-card-image"/>}
                         </label>
 
-                        <div className="button-group">
-                            <button type="submit">Save Changes</button>
-                            <button type="button" onClick={() => setIsEditing(false)}>Cancel</button>
+                        <div className="space-between">
+                            <button className="button-group-button" type="submit">Save Changes</button>
+                            <button className="button-group-button" type="button" onClick={() => setIsEditing(false)}>Cancel</button>
                         </div>
                     </form>
                 </div>
@@ -193,14 +209,14 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                                     favorites={props.favorites}
                                     toggleFavorite={props.toggleFavorite}
                                 />
-                                <div className="button-group">
+                                <div className="space-between">
                                     <button
                                         id={r.isActive ? "active-button" : "inactive-button"}
-                                        onClick={() => handleEditToggle(r.id)}
+                                        onClick={() => handleToggleActiveStatus(r.id)}
                                     >
                                         {r.isActive ? "Active" : "Inactive"}
                                     </button>
-                                    <button onClick={() => handleEditToggle(r.id)}>Edit</button>
+                                    <button className="button-group-button" onClick={() => handleEditToggle(r.id)}>Edit</button>
                                     <button id="button-delete" onClick={() => handleDeleteClick(r.id)}>Delete</button>
                                 </div>
                             </div>
