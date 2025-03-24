@@ -2,10 +2,11 @@ import {RevealModel} from "./model/RevealModel.ts";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import RevealCard from "./RevealCard.tsx";
-import {Category} from "./model/Category.ts";
 import * as React from "react";
 import "./styles/Buttons.css"
 import "./styles/RevealCard.css"
+import { Category, ALL_CATEGORIES } from "./model/Category.ts";
+import { getCategoryDisplayName } from "./utils/getCategoryDisplayName.ts";
 
 type MyRevealsProps = {
     allReveals: RevealModel[];
@@ -205,9 +206,9 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                                 value={editData?.category || ""}
                                 onChange={(e) => setEditData({ ...editData!, category: e.target.value as Category })}
                             >
-                                {(["ANIMAL", "ART", "BUILDING", "CARTOON", "COOKING", "CITY", "CLOTHING", "COUNTRY", "FOOD", "GAME", "INSTRUMENT", "MOVIE", "MUSIC", "PERSON", "PLANT", "SPORTS", "TOOL", "VEHICLE"] as Category[]).map((cat) => (
+                                {ALL_CATEGORIES.map((cat) => (
                                     <option key={cat} value={cat}>
-                                        {cat}
+                                        {getCategoryDisplayName(cat)}
                                     </option>
                                 ))}
                             </select>

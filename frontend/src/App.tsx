@@ -157,7 +157,7 @@ export default function App() {
         <Route path="/" element={<Welcome />} />
         <Route path="/play" element={<Play />} />
         <Route path="/list-of-all-reveals" element={<ListOfAllReveals activeReveals={activeReveals} getActiveReveals={getActiveReveals} favorites={favorites} toggleFavorite={toggleFavorite} user={user}/>} />
-        <Route path="/reveal/:id" element={<Details user={user}/>} />
+        <Route path="/reveal/:id" element={<Details/>} />
         <Route path="/high-score" element={<HighScore highScoresOverTime={highScoresOverTime} highScoresWithClicks={highScoresWithClicks} getHighScoresOverTime={getHighScoresOverTime} getHighScoresWithClicks={getHighScoresWithClicks}/>} />
 
         <Route element={<ProtectedRoute user={user} />}>
