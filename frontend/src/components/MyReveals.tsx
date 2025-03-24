@@ -233,12 +233,13 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                                     onChange={(e) => handleSolutionWordChange(index, e.target.value)}
                                 />
                             ))}
-                            <button type="button" onClick={handleAddSolutionWord}>
-                                Add Solution Word
+                            <button type="button" className="solution-words-button more-space" onClick={handleAddSolutionWord}>
+                                Extend Words
                             </button>
                         </label>
 
                         {/* closeSolutionWords */}
+                        <div>
                         <label>
                             Close Solution Words:
                             {editData?.closeSolutionWords.map((word, index) => (
@@ -250,10 +251,11 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                                     onChange={(e) => handleCloseSolutionWordChange(index, e.target.value)}
                                 />
                             ))}
-                            <button type="button" onClick={handleAddCloseSolutionWord}>
-                                Add Close Solution Word
+                            <button className="solution-words-button more-space" type="button" onClick={handleAddCloseSolutionWord}>
+                                Extend Close-Words
                             </button>
                         </label>
+                        </div>
 
                         <label>
                             Image:

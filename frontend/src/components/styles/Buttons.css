@@ -70,3 +70,7 @@
 #inactive-button:hover {
     background-color: #555;
 }
+
+.more-space {
+    margin-bottom: 20px;
+}
