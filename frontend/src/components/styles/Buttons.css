@@ -26,3 +26,51 @@
 .solution-word-button {
     margin-bottom: 15px;
 }
+
+.favorite-on {
+    color: red;
+}
+
+.favorite-off {
+    color: #999;
+}
+
+#button-favorite-reveal-card {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    outline: none;
+}
+
+/* Delete-Button */
+#button-delete {
+    background-color: #ff9999;
+}
+
+#button-delete:hover {
+    background-color: #d32f2f;
+}
+
+/* Aktiv- und Offline-Buttons */
+#active-button {
+    background-color: #66bb6a;
+}
+
+#active-button:hover {
+    background-color: #388e3c;
+}
+
+#inactive-button {
+    background-color: #999;
+}
+
+#inactive-button:hover {
+    background-color: #555;
+}
+
+.more-space {
+    margin: 20px;
+}

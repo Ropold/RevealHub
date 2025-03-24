@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./styles/AddRevealCard.css"
 import "./styles/Popup.css"
+import { Category, ALL_CATEGORIES } from "./model/Category.ts";
+import { getCategoryDisplayName } from "./utils/getCategoryDisplayName.ts";
 
 type AddRevealCardProps = {
     user: string;
@@ -133,18 +135,14 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
                         <select
                             className="input-small"
                             value={category || ""}
-                            onChange={(e) => setCategory(e.target.value || null)}
+                            onChange={(e) => setCategory(e.target.value as Category)}
                         >
                             <option value="">Please select a Category</option>
-                            <option value="ANIMAL">Animal</option>
-                            <option value="CITY">City</option>
-                            <option value="BUILDING">Building</option>
-                            <option value="FOOD">Food</option>
-                            <option value="TOOL">Tool</option>
-                            <option value="SPORT">Sport</option>
-                            <option value="MOVIE">Movie</option>
-                            <option value="GAME">Game</option>
-                            <option value="CARTOON">Cartoon</option>
+                            {ALL_CATEGORIES.map((cat) => (
+                                <option key={cat} value={cat}>
+                                    {getCategoryDisplayName(cat)}
+                                </option>
+                            ))}
                         </select>
                     </label>
 
