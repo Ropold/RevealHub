@@ -244,8 +244,7 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
 
                         {/* closeSolutionWords */}
                         <div>
-                        <label>
-                            Close Solution Words:
+                            <label className="more-space">Close Solution Words:</label>
                             {editData?.closeSolutionWords.map((word, index) => (
                                 <input
                                     key={index}
@@ -255,11 +254,12 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                                     onChange={(e) => handleCloseSolutionWordChange(index, e.target.value)}
                                 />
                             ))}
+                            <br /> {/* Zeilenumbruch hinzufügen */}
                             <button className="solution-words-button more-space" type="button" onClick={handleAddCloseSolutionWord}>
                                 Extend Close-Words
                             </button>
-                        </label>
                         </div>
+
 
                         <label>
                             Image:
