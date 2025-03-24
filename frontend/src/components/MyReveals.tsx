@@ -66,16 +66,20 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
             return;
         }
 
+        const cleanedSolutionWords = editData.solutionWords.filter(word => word.trim() !== "");
+        const cleanedCloseSolutionWords = editData.closeSolutionWords.filter(word => word.trim() !== "");
+
+        const updatedRevealData = {
+            ...editData,
+            solutionWords: cleanedSolutionWords,
+            closeSolutionWords: cleanedCloseSolutionWords,
+            imageUrl: image ? "temp-image" : editData.imageUrl, // Nur ersetzen, wenn ein neues Bild hochgeladen wurde
+        };
+
         const data = new FormData();
         if (image) {
             data.append("image", image);
         }
-
-        const updatedRevealData = {
-            ...editData,
-            imageUrl: image ? "temp-image" : editData.imageUrl, // Nur ersetzen, wenn ein neues Bild hochgeladen wurde
-        };
-
 
         data.append("revealModelDto", new Blob([JSON.stringify(updatedRevealData)], {type: "application/json"}));
 
