@@ -53,6 +53,8 @@ export default function Details() {
             <div className="profile-container">
                 <h2>Added by User</h2>
                 <p><strong>Github-User</strong> {githubUser.login} </p>
+                <p><strong>GitHub Profile</strong> <a href={githubUser.html_url} target="_blank" rel="noopener noreferrer">Visit Profile</a></p>
+                <img src={githubUser.avatar_url} alt={`${githubUser.login}'s avatar`} />
             </div>
         </>
 
