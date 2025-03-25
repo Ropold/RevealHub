@@ -7,9 +7,11 @@
 }
 
 .category-image{
-    width: 150px;
+    width: 100px;
+    height: 100px;
 }
 
 .category-image-active{
     width: 150px;
+    height: 150px;
 }
