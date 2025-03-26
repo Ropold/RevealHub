@@ -7,11 +7,24 @@
 }
 
 .category-image{
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 200px;
+    border: 5px solid #66b3ff;
+    margin: 5px;
+    border-radius: 10px;
+}
+
+.category-image:hover{
+    border-color: #388e3c;
+    transform: scale(1.03);
+    box-shadow: 1px 4px 20px rgba(0, 0, 0, 0.8);
+    cursor: pointer;
 }
 
 .category-image-active{
     width: 150px;
-    height: 150px;
+    height: 200px;
+    border: 5px solid #388e3c;
+    margin: 5px;
+    border-radius: 10px;
 }

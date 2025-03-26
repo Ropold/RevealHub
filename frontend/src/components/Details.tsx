@@ -25,13 +25,12 @@ export default function Details() {
     const fetchGithubUsername = async () => {
         try {
             const response = await axios.get(`https://api.github.com/user/${reveal.githubId}`);
-            setGithubUser(response.data);  // Setze den GitHub-Nutzer in den State
+            setGithubUser(response.data);
         } catch (error) {
             console.error('Fehler beim Abrufen des GitHub-Nutzers:', error);
         }
     };
 
-    // useEffect für das Abrufen des GitHub-Nutzers, nur wenn githubId verfügbar ist
     useEffect(() => {
         if (reveal.githubId) {
             fetchGithubUsername();

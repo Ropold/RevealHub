@@ -5,10 +5,10 @@ import {Category} from "./model/Category.ts";
 import { getCategoryDisplayName } from "./utils/getCategoryDisplayName.ts";
 import "./styles/PreviewPlay.css"
 
-import welcomePic from "../assets/Reveal-pic.jpg"
 import cartoonPic from "../assets/categories/cartoon.jpg";
 import animalPic from "../assets/categories/animal.jpg";
 import artPic from "../assets/categories/art.jpg";
+import randomPic from "../assets/categories/random.jpg";
 
 const categoryImages: Record<Category, string> = {
     CARTOON: cartoonPic,
@@ -24,6 +24,7 @@ type PreviewPlayProps = {
 export default function PreviewPlay(props: Readonly<PreviewPlayProps>){
     const [activeCategories, setActiveCategories] = useState<Category[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<Category | "">("");
+    const [randomCategorySelected, setRandomCategorySelected] = useState<boolean>(false);
 
     function getActiveCategories(){
         axios.get("/api/reveal-hub/active/categories")
@@ -75,21 +76,32 @@ export default function PreviewPlay(props: Readonly<PreviewPlayProps>){
                             key={category}
                             src={categoryImages[category]}
                             alt={getCategoryDisplayName(category)}
-                            onClick={() => setSelectedCategory(category)}
-                            className={`category-image${selectedCategory === category ? "-active" : ""}`}
+                            onClick={() => {
+                                setSelectedCategory(category);
+                                setRandomCategorySelected(false);
+                            }}
+                            className={`category-image${!randomCategorySelected && selectedCategory === category ? "-active" : ""}`}
                         />
                     ))
                 ) : (
                     <p>Loading categories...</p>
                 )}
+                <img
+                    src={randomPic}
+                    alt="Pick Random Category"
+                    onClick={() => {
+                        selectRandomCategory();
+                        setRandomCategorySelected(true);
+                    }}
+                    className={`category-image${randomCategorySelected ? "-active" : ""}`}
+                />
             </div>
 
-            {/* Zufallsbutton */}
-            <button className="button-group-button" onClick={selectRandomCategory}>
-                Pick Random Category
-            </button>
-
-            {selectedCategory && <p className="selected-category">Selected Category: {getCategoryDisplayName(selectedCategory)}</p>}
+            {(selectedCategory || randomCategorySelected) && (
+                <p className="selected-category">
+                    Selected Category: {randomCategorySelected ? "Random" : selectedCategory ? getCategoryDisplayName(selectedCategory) : ""}
+                </p>
+            )}
         </div>
     );
 }
