@@ -57,37 +57,44 @@ export default function PreviewPlay(props: Readonly<PreviewPlayProps>){
 
     return (
         <div className="preview-play">
-            {(selectedCategory || randomCategorySelected) && (
-                <h3>
-                    Selected Category: <strong className="selected-category">{randomCategorySelected ? "Random" : selectedCategory ? getCategoryDisplayName(selectedCategory) : ""}</strong>
-                </h3>
-            )}
-
+            <h3>
+                Selected Category: <strong className="selected-category">{randomCategorySelected ? "Random" : selectedCategory ? getCategoryDisplayName(selectedCategory) : "No category selected yet"}</strong>
+            </h3>
             <div className="category-images">
-                <img
-                    src={randomPic}
-                    alt="Pick Random Category"
-                    onClick={() => {
-                        selectRandomCategory();
-                        setRandomCategorySelected(true); // Setze den Zustand für Zufallskategorie
-                    }}
-                    className={`category-image-active ${randomCategorySelected ? "category-image-active-selected" : ""}`}
-                />
+                <div>
+                    <img
+                        src={randomPic}
+                        alt="Pick Random Category"
+                        onClick={() => {
+                            selectRandomCategory();
+                            setRandomCategorySelected(true); // Setze den Zustand für Zufallskategorie
+                        }}
+                        className={`category-image-active ${randomCategorySelected ? "category-image-active-selected" : ""}`}
+                    />
+                    <figcaption>
+                        Random
+                    </figcaption>
+                </div>
                 {ALL_CATEGORIES.map((category) => {
                     const isActive = activeCategories.includes(category);
+
                     return (
-                        <img
-                            key={category}
-                            src={categoryImages[category]}
-                            alt={getCategoryDisplayName(category)}
-                            onClick={() => {
-                                if (isActive) {
-                                    setSelectedCategory(category);
-                                    setRandomCategorySelected(false);
-                                }
-                            }}
-                            className={`category-image ${isActive ? "category-image-active" : ""} ${selectedCategory === category && isActive && !randomCategorySelected ? "category-image-active-selected" : ""}`}
-                        />
+                        <div key={category}>
+                            <img
+                                src={categoryImages[category]}
+                                alt={getCategoryDisplayName(category)}
+                                onClick={() => {
+                                    if (isActive) {
+                                        setSelectedCategory(category);
+                                        setRandomCategorySelected(false);
+                                    }
+                                }}
+                                className={`category-image ${isActive ? "category-image-active" : ""} ${selectedCategory === category && isActive && !randomCategorySelected ? "category-image-active-selected" : ""}`}
+                            />
+                            <figcaption>
+                                {getCategoryDisplayName(category)}
+                            </figcaption>
+                        </div>
                     );
                 })}
             </div>
