@@ -4,22 +4,12 @@ import {RevealModel} from "./model/RevealModel.ts";
 import {Category} from "./model/Category.ts";
 import { getCategoryDisplayName } from "./utils/getCategoryDisplayName.ts";
 import "./styles/PreviewPlay.css"
-
-import cartoonPic from "../assets/categories/cartoon.jpg";
-import animalPic from "../assets/categories/animal.jpg";
-import artPic from "../assets/categories/art.jpg";
 import randomPic from "../assets/categories/random.jpg";
-
-const categoryImages: Record<Category, string> = {
-    CARTOON: cartoonPic,
-    ANIMAL: animalPic,
-    ART: artPic
-};
+import {categoryImages} from "./utils/CategoryImages.ts";
 
 type PreviewPlayProps = {
     selectedRevealsByCategory: (reveals: RevealModel[]) => void;
 }
-
 
 export default function PreviewPlay(props: Readonly<PreviewPlayProps>){
     const [activeCategories, setActiveCategories] = useState<Category[]>([]);
