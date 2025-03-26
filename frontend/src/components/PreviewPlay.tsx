@@ -9,12 +9,15 @@ import {categoryImages} from "./utils/CategoryImages.ts";
 
 type PreviewPlayProps = {
     selectedRevealsByCategory: (reveals: RevealModel[]) => void;
+    selectedCategory: Category | null;
+    setSelectedCategory: (category: Category) => void;
+    randomCategorySelected: boolean;
+    setRandomCategorySelected: (selected: boolean) => void;
 }
 
 export default function PreviewPlay(props: Readonly<PreviewPlayProps>){
     const [activeCategories, setActiveCategories] = useState<Category[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<Category | "">("");
-    const [randomCategorySelected, setRandomCategorySelected] = useState<boolean>(false);
+
 
     function getActiveCategories(){
         axios.get("/api/reveal-hub/active/categories")
@@ -39,15 +42,15 @@ export default function PreviewPlay(props: Readonly<PreviewPlayProps>){
     function selectRandomCategory() {
         if (activeCategories.length > 0) {
             const randomIndex = Math.floor(Math.random() * activeCategories.length);
-            setSelectedCategory(activeCategories[randomIndex]);
+            props.setSelectedCategory(activeCategories[randomIndex]);
         }
     }
 
     useEffect(() => {
-        if (selectedCategory) {
-            getRevealsByCategory(selectedCategory);
+        if (props.selectedCategory) {
+            getRevealsByCategory(props.selectedCategory);
         }
-    }, [selectedCategory]);
+    }, [props.selectedCategory]);
 
 
     useEffect(() => {
@@ -58,7 +61,16 @@ export default function PreviewPlay(props: Readonly<PreviewPlayProps>){
     return (
         <div className="preview-play">
             <h3>
-                Selected Category: <strong className="selected-category">{randomCategorySelected ? "Random" : selectedCategory ? getCategoryDisplayName(selectedCategory) : "No category selected yet"}</strong>
+                Selected Category:
+                <strong
+                    className={`selected-category ${props.selectedCategory === null ? "no-category" : ""}`}
+                >
+                    {props.randomCategorySelected
+                        ? "Random"
+                        : props.selectedCategory
+                            ? getCategoryDisplayName(props.selectedCategory)
+                            : "No category selected"}
+                </strong>
             </h3>
             <div className="category-images">
                 <div>
@@ -67,9 +79,9 @@ export default function PreviewPlay(props: Readonly<PreviewPlayProps>){
                         alt="Pick Random Category"
                         onClick={() => {
                             selectRandomCategory();
-                            setRandomCategorySelected(true); // Setze den Zustand für Zufallskategorie
+                            props.setRandomCategorySelected(true);
                         }}
-                        className={`category-image-active ${randomCategorySelected ? "category-image-active-selected" : ""}`}
+                        className={`category-image-active ${props.randomCategorySelected ? "category-image-active-selected" : ""}`}
                     />
                     <figcaption>
                         Random
@@ -85,11 +97,11 @@ export default function PreviewPlay(props: Readonly<PreviewPlayProps>){
                                 alt={getCategoryDisplayName(category)}
                                 onClick={() => {
                                     if (isActive) {
-                                        setSelectedCategory(category);
-                                        setRandomCategorySelected(false);
+                                        props.setSelectedCategory(category);
+                                        props.setRandomCategorySelected(false);
                                     }
                                 }}
-                                className={`category-image ${isActive ? "category-image-active" : ""} ${selectedCategory === category && isActive && !randomCategorySelected ? "category-image-active-selected" : ""}`}
+                                className={`category-image ${isActive ? "category-image-active" : ""} ${props.selectedCategory === category && isActive && !props.randomCategorySelected ? "category-image-active-selected" : ""}`}
                             />
                             <figcaption>
                                 {getCategoryDisplayName(category)}
