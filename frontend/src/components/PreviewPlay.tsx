@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {RevealModel} from "./model/RevealModel.ts";
-import {Category} from "./model/Category.ts";
+import {ALL_CATEGORIES, Category} from "./model/Category.ts";
 import { getCategoryDisplayName } from "./utils/getCategoryDisplayName.ts";
 import "./styles/PreviewPlay.css"
 import randomPic from "../assets/categories/random.jpg";
@@ -57,41 +57,41 @@ export default function PreviewPlay(props: Readonly<PreviewPlayProps>){
 
     return (
         <div className="preview-play">
-            <h2>Preview Play</h2>
-            <p>Select a Category</p>
+            {(selectedCategory || randomCategorySelected) && (
+                <h3>
+                    Selected Category: <strong className="selected-category">{randomCategorySelected ? "Random" : selectedCategory ? getCategoryDisplayName(selectedCategory) : ""}</strong>
+                </h3>
+            )}
+
             <div className="category-images">
-                {activeCategories.length > 0 ? (
-                    activeCategories.map((category) => (
-                        <img
-                            key={category}
-                            src={categoryImages[category]}
-                            alt={getCategoryDisplayName(category)}
-                            onClick={() => {
-                                setSelectedCategory(category);
-                                setRandomCategorySelected(false);
-                            }}
-                            className={`category-image${!randomCategorySelected && selectedCategory === category ? "-active" : ""}`}
-                        />
-                    ))
-                ) : (
-                    <p>Loading categories...</p>
-                )}
                 <img
                     src={randomPic}
                     alt="Pick Random Category"
                     onClick={() => {
                         selectRandomCategory();
-                        setRandomCategorySelected(true);
+                        setRandomCategorySelected(true); // Setze den Zustand für Zufallskategorie
                     }}
-                    className={`category-image${randomCategorySelected ? "-active" : ""}`}
+                    className={`category-image-active ${randomCategorySelected ? "category-image-active-selected" : ""}`}
                 />
+                {ALL_CATEGORIES.map((category) => {
+                    const isActive = activeCategories.includes(category);
+                    return (
+                        <img
+                            key={category}
+                            src={categoryImages[category]}
+                            alt={getCategoryDisplayName(category)}
+                            onClick={() => {
+                                if (isActive) {
+                                    setSelectedCategory(category);
+                                    setRandomCategorySelected(false);
+                                }
+                            }}
+                            className={`category-image ${isActive ? "category-image-active" : ""} ${selectedCategory === category && isActive && !randomCategorySelected ? "category-image-active-selected" : ""}`}
+                        />
+                    );
+                })}
             </div>
 
-            {(selectedCategory || randomCategorySelected) && (
-                <p className="selected-category">
-                    Selected Category: {randomCategorySelected ? "Random" : selectedCategory ? getCategoryDisplayName(selectedCategory) : ""}
-                </p>
-            )}
         </div>
     );
 }
