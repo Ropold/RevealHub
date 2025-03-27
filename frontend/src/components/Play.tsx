@@ -16,12 +16,15 @@ export default function Play(props: Readonly<PlayProps>) {
     const [gameReveal, setGameReveal] = useState<RevealModel | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const [randomCategorySelected, setRandomCategorySelected] = useState<boolean>(false);
-    const [gameMode, setGameMode] = useState<GameMode>("REVEAL_WITH_CLICKS")
+    const [gameMode, setGameMode] = useState<GameMode>("REVEAL_WITH_CLICKS");
 
     const [playerName, setPlayerName] = useState<string>("");
     const [numberOfClicks, setNumberOfClicks] = useState<number>(0);
     const [time, setTime] = useState<number>(0);
     const [intervalId, setIntervalId] = useState<number | null>(null);
+
+    const totalTiles = 36;
+    const [revealedTiles, setRevealedTiles] = useState<number[]>([]);
 
     // const [isNewHighScore, setIsNewHighScore] = useState<boolean>(false);
     // const [showAnimation, setShowAnimation] = useState<boolean>(false);
@@ -37,6 +40,19 @@ export default function Play(props: Readonly<PlayProps>) {
         }
         const randomIndex = Math.floor(Math.random() * revealsByCategory.length);
         return revealsByCategory[randomIndex];
+    }
+
+    function handleRevealMoreButton() {
+        setNumberOfClicks((prevClicks) => prevClicks + 1);
+        // Erstelle ein Array mit Indizes von 0 bis totalTiles - 1
+        const hiddenFields = Array.from({ length: totalTiles }, (_, index) => index).filter(
+            (index) => !revealedTiles.includes(index)
+        );
+
+        if (hiddenFields.length > 0) {
+            const randomIndex = hiddenFields[Math.floor(Math.random() * hiddenFields.length)];
+            setRevealedTiles((prevTiles) => [...prevTiles, randomIndex]);
+        }
     }
 
     function handleStartGame() {
@@ -58,6 +74,7 @@ export default function Play(props: Readonly<PlayProps>) {
         setRandomCategorySelected(false);
         setTime(0);
         setNumberOfClicks(0);
+        setRevealedTiles([]);
     }
 
     function toggleGameMode(){
@@ -76,9 +93,6 @@ export default function Play(props: Readonly<PlayProps>) {
         };
     }
 
-    function handleRevealMore(){
-        setNumberOfClicks(prevClicks => prevClicks + 1);
-    }
 
     // Timer starten, wenn das Spiel beginnt
     useEffect(() => {
@@ -99,7 +113,7 @@ export default function Play(props: Readonly<PlayProps>) {
         <div>
             <div className="space-between">
                 {!gameStarted && <button onClick={handleStartGame} id={gameStarted ? "inactive-button" : revealsByCategory.length > 0 ? "active-button" : "inactive-button"} disabled={gameStarted}>Start Game</button>}
-                {gameStarted && gameMode === "REVEAL_WITH_CLICKS" && <button onClick={handleRevealMore} className="button-group-button" id="button-reveal-more">Reveal More</button>}
+                {gameStarted && gameMode === "REVEAL_WITH_CLICKS" && <button onClick={handleRevealMoreButton} className="button-group-button" id="button-reveal-more">Reveal More</button>}
                 <button onClick={!gameStarted ? toggleGameMode : undefined} className={gameMode === "REVEAL_WITH_CLICKS" ? "button-with-clicks" : "button-over-time"} disabled={gameStarted} id={gameStarted ? "disabled-button" : ""}>{gameMode === "REVEAL_WITH_CLICKS" ? "Gamemode: 🔘 With Clicks" : "Gamemode: ⏳ Over Time"}</button>
                 <button onClick={() => {handleResetGame()}} className="button-group-button">Reset</button>
                 <div>{gameMode === "REVEAL_OVER_TIME" ? `⏱️ Time: ${time.toFixed(1)} sec` : ""}</div>
@@ -108,7 +122,7 @@ export default function Play(props: Readonly<PlayProps>) {
 
             {!gameStarted && <PreviewPlay selectedRevealsByCategory={selectedRevealsByCategory} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} randomCategorySelected={randomCategorySelected} setRandomCategorySelected={setRandomCategorySelected}/>}
 
-            {gameStarted && gameReveal && <StartGame gameReveal={gameReveal} gameFinished={gameFinished} setGameFinished={setGameFinished} gameMode={gameMode}/>}
+            {gameStarted && gameReveal && <StartGame gameReveal={gameReveal} gameFinished={gameFinished} setGameFinished={setGameFinished} gameMode={gameMode} revealedTiles={revealedTiles} setRevealedTiles={setRevealedTiles}/>}
         </div>
     );
 }
