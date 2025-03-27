@@ -12,13 +12,13 @@ type PlayProps = {
 export default function Play(props: Readonly<PlayProps>) {
     const [revealsByCategory, setRevealsByCategory] = useState<RevealModel[]>([]);
     const [gameStarted, setGameStarted] = useState(false);
-    //const [gameFinished, setGameFinished] = useState(false);
+    const [gameFinished, setGameFinished] = useState(false);
     const [gameReveal, setGameReveal] = useState<RevealModel | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const [randomCategorySelected, setRandomCategorySelected] = useState<boolean>(false);
     const [gameMode, setGameMode] = useState<GameMode>("REVEAL_WITH_CLICKS")
 
-    //const [playerName, setPlayerName] = useState<string>("");
+    const [playerName, setPlayerName] = useState<string>("");
     const [numberOfClicks, setNumberOfClicks] = useState<number>(0);
     const [time, setTime] = useState<number>(0);
     const [intervalId, setIntervalId] = useState<number | null>(null);
@@ -45,11 +45,13 @@ export default function Play(props: Readonly<PlayProps>) {
             setGameReveal(Reveal);
             setGameStarted(true);
             setRandomCategorySelected(false);
+            setGameFinished(false);
         }
     }
 
     function handleResetGame(){
         setGameStarted(false);
+        setGameFinished(true);
         setGameReveal(null);
         setRevealsByCategory([]);
         setSelectedCategory(null);
@@ -63,16 +65,16 @@ export default function Play(props: Readonly<PlayProps>) {
         prevState === "REVEAL_WITH_CLICKS" ? "REVEAL_OVER_TIME" : "REVEAL_WITH_CLICKS")
     }
 
-    // const postHighScore = () => {
-    //     const highScoreData = {
-    //         playerName,
-    //         githubId: props.user,
-    //         category: gameReveal?.category,
-    //         gameMode: gameMode,
-    //         scoreTime: parseFloat(time.toFixed(1)),
-    //         numberOfClicks: numberOfClicks
-    //     };
-    // }
+    const postHighScore = () => {
+        const highScoreData = {
+            playerName,
+            githubId: props.user,
+            category: gameReveal?.category,
+            gameMode: gameMode,
+            scoreTime: parseFloat(time.toFixed(1)),
+            numberOfClicks: numberOfClicks
+        };
+    }
 
     function handleRevealMore(){
         setNumberOfClicks(prevClicks => prevClicks + 1);
@@ -81,7 +83,7 @@ export default function Play(props: Readonly<PlayProps>) {
     // Timer starten, wenn das Spiel beginnt
     useEffect(() => {
         if (gameStarted) {
-            setTime(0); // Timer zurücksetzen
+            setTime(0);
             const id = window.setInterval(() => {
                 setTime(prev => prev + 0.1);
             }, 100);
@@ -96,7 +98,6 @@ export default function Play(props: Readonly<PlayProps>) {
     return (
         <div>
             <div className="space-between">
-                <p>{props.user}</p>
                 {!gameStarted && <button onClick={handleStartGame} id={gameStarted ? "inactive-button" : revealsByCategory.length > 0 ? "active-button" : "inactive-button"} disabled={gameStarted}>Start Game</button>}
                 {gameStarted && gameMode === "REVEAL_WITH_CLICKS" && <button onClick={handleRevealMore} className="button-group-button" id="button-reveal-more">Reveal More</button>}
                 <button onClick={!gameStarted ? toggleGameMode : undefined} className={gameMode === "REVEAL_WITH_CLICKS" ? "button-with-clicks" : "button-over-time"} disabled={gameStarted} id={gameStarted ? "disabled-button" : ""}>{gameMode === "REVEAL_WITH_CLICKS" ? "Gamemode: 🔘 With Clicks" : "Gamemode: ⏳ Over Time"}</button>
@@ -104,8 +105,10 @@ export default function Play(props: Readonly<PlayProps>) {
                 <div>{gameMode === "REVEAL_OVER_TIME" ? `⏱️ Time: ${time.toFixed(1)} sec` : ""}</div>
                 <div>{gameMode === "REVEAL_WITH_CLICKS" ? `🔘 Clicks: ${numberOfClicks}` : ""}</div>
             </div>
+
             {!gameStarted && <PreviewPlay selectedRevealsByCategory={selectedRevealsByCategory} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} randomCategorySelected={randomCategorySelected} setRandomCategorySelected={setRandomCategorySelected}/>}
-            {gameStarted && gameReveal && <StartGame gameReveal={gameReveal} />}
+
+            {gameStarted && gameReveal && <StartGame gameReveal={gameReveal} gameFinished={gameFinished} setGameFinished={setGameFinished} gameMode={gameMode}/>}
         </div>
     );
 }
