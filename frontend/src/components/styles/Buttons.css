@@ -68,9 +68,26 @@
 }
 
 #inactive-button:hover {
-    background-color: #555;
+    cursor: default;
 }
 
 .more-space {
     margin: 20px;
+}
+
+.button-with-clicks {
+    background-color: #FFE893; /* Violett */
+}
+
+.button-with-clicks:hover {
+    background-color: #FCC737; /* Dunkleres Violett beim Hover */
+}
+
+
+.button-over-time {
+    background-color: #9c27b0; /* Türkis / Cyan */
+}
+
+.button-over-time:hover {
+    background-color: #7b1fa2 /* Dunkleres Türkis beim Hover */
 }
