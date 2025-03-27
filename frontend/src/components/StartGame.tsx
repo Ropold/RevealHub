@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { RevealModel } from "./model/RevealModel.ts";
 import "./styles/GameStart.css";
-import { useState } from "react";
+import welcomePic from "../assets/Reveal-pic.jpg"
 
 type StartGameProps = {
     gameReveal: RevealModel;
@@ -11,6 +12,9 @@ type StartGameProps = {
 
 export default function StartGame(props: Readonly<StartGameProps>) {
     const [solutionWord, setSolutionWord] = useState<string>("");
+    const [revealedTiles, setRevealedTiles] = useState<number[]>([]); // Speichert aufgedeckte Kacheln
+
+    const totalTiles = 36;
 
     function handleSolutionWord(event: React.FormEvent) {
         event.preventDefault();
@@ -27,6 +31,23 @@ export default function StartGame(props: Readonly<StartGameProps>) {
         setSolutionWord("");
     }
 
+    function revealField() {
+        // Erstelle ein Array mit Indizes von 0 bis totalTiles - 1
+        const hiddenFields = Array.from({ length: totalTiles }, (_, index) => index).filter(
+            (index) => !revealedTiles.includes(index)
+        );
+
+        // Wenn es noch versteckte Felder gibt
+        if (hiddenFields.length > 0) {
+            // Wähle zufällig ein Feld aus den noch nicht aufgedeckten Feldern
+            const randomIndex = hiddenFields[Math.floor(Math.random() * hiddenFields.length)];
+
+            // Füge das zufällig gewählte Feld zu den aufgedeckten Feldern hinzu
+            setRevealedTiles((prevTiles) => [...prevTiles, randomIndex]);
+        }
+    }
+
+
     return (
         <>
             <form className="solution-word-container space-between" onSubmit={handleSolutionWord}>
@@ -41,11 +62,27 @@ export default function StartGame(props: Readonly<StartGameProps>) {
                 <button className="button-group-button" type="submit">Check</button>
             </form>
 
-
-            <div>
-                <h2>Game started</h2>
+            <div className="reveal-container">
+                {/* Das eigentliche Bild */}
                 <img className="reveal-pic" src={props.gameReveal.imageUrl} alt={props.gameReveal.name} />
+
+                {/* Mosaik-Grid */}
+                <div className="mosaic-grid">
+                    {[...Array(totalTiles)].map((_, index) => (
+                        <div
+                            key={index}
+                            className={`mosaic-tile ${revealedTiles.includes(index) ? "hidden" : ""}`}
+                            style={{
+                                backgroundImage: `url(${welcomePic})`,
+                                backgroundSize: 'cover',
+                            }}
+                        ></div>
+                    ))}
+                </div>
             </div>
+
+
+            <button onClick={revealField}>Reveal More</button>
         </>
     );
 }
