@@ -12,6 +12,7 @@ type PlayProps = {
 export default function Play(props: Readonly<PlayProps>) {
     const [revealsByCategory, setRevealsByCategory] = useState<RevealModel[]>([]);
     const [gameStarted, setGameStarted] = useState(false);
+    const [gameFinished, setGameFinished] = useState(false);
     const [gameReveal, setGameReveal] = useState<RevealModel | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const [randomCategorySelected, setRandomCategorySelected] = useState<boolean>(false);
@@ -103,7 +104,7 @@ export default function Play(props: Readonly<PlayProps>) {
                 <div>{gameMode === "REVEAL_WITH_CLICKS" ? `🔘 Clicks: ${numberOfClicks}` : ""}</div>
             </div>
             {!gameStarted && <PreviewPlay selectedRevealsByCategory={selectedRevealsByCategory} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} randomCategorySelected={randomCategorySelected} setRandomCategorySelected={setRandomCategorySelected}/>}
-            {gameStarted && gameReveal && <StartGame revealFromUser={gameReveal} />}
+            {gameStarted && gameReveal && <StartGame gameReveal={gameReveal} />}
         </div>
     );
 }

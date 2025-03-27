@@ -1,7 +1,8 @@
 import {RevealModel} from "./model/RevealModel.ts";
+import "./styles/GameStart.css"
 
 type StartGameProps = {
-    revealFromUser: RevealModel;
+    gameReveal: RevealModel;
 }
 
 export default function StartGame(props: Readonly<StartGameProps>){
@@ -9,7 +10,8 @@ export default function StartGame(props: Readonly<StartGameProps>){
         <>
             <div>
                 <h2>Game started</h2>
-                <p>{props.revealFromUser.name}</p>
+                <p>{props.gameReveal.name}</p>
+                <img className="reveal-pic" src={props.gameReveal.imageUrl} alt={props.gameReveal.name}/>
             </div>
         </>
     )
