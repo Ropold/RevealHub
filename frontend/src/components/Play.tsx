@@ -152,7 +152,7 @@ export default function Play(props: Readonly<PlayProps>) {
 
             {!gameStarted && <PreviewPlay selectedRevealsByCategory={selectedRevealsByCategory} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} randomCategorySelected={randomCategorySelected} setRandomCategorySelected={setRandomCategorySelected}/>}
 
-            {gameStarted && gameReveal && <StartGame gameReveal={gameReveal} gameFinished={gameFinished} setGameFinished={setGameFinished} gameMode={gameMode} revealedTiles={revealedTiles} setRevealedTiles={setRevealedTiles} handleResetGame={handleResetGame}/>}
+            {gameStarted && gameReveal && <StartGame gameReveal={gameReveal} gameMode={gameMode} revealedTiles={revealedTiles} handleResetGame={handleResetGame}/>}
         </div>
     );
 }

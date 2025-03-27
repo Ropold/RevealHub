@@ -5,11 +5,8 @@ import welcomePic from "../assets/Reveal-pic.jpg";
 
 type StartGameProps = {
     gameReveal: RevealModel;
-    gameFinished: boolean;
-    setGameFinished: (gameFinished: boolean) => void;
     gameMode: string;
     revealedTiles: number[];
-    setRevealedTiles: (tiles: number[]) => void;
     handleResetGame: () => void;
 };
 
@@ -22,10 +19,8 @@ export default function StartGame(props: Readonly<StartGameProps>) {
         const correctSolutions = props.gameReveal.solutionWords.map(word => word.toLowerCase());
 
         if (correctSolutions.includes(solutionWord.toLowerCase())) {
-            props.setGameFinished(true);
-            alert("✅ Richtig! Spiel beendet.");
-            props.setGameFinished(true);
             props.handleResetGame();
+            alert("✅ Richtig! Spiel beendet.");
         } else {
             alert("❌ Falsch! Versuche es nochmal.");
         }
