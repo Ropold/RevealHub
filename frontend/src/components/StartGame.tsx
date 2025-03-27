@@ -10,6 +10,7 @@ type StartGameProps = {
     gameMode: string;
     revealedTiles: number[];
     setRevealedTiles: (tiles: number[]) => void;
+    handleResetGame: () => void;
 };
 
 export default function StartGame(props: Readonly<StartGameProps>) {
@@ -23,6 +24,8 @@ export default function StartGame(props: Readonly<StartGameProps>) {
         if (correctSolutions.includes(solutionWord.toLowerCase())) {
             props.setGameFinished(true);
             alert("✅ Richtig! Spiel beendet.");
+            props.setGameFinished(true);
+            props.handleResetGame();
         } else {
             alert("❌ Falsch! Versuche es nochmal.");
         }

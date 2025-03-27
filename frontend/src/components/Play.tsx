@@ -44,17 +44,6 @@ export default function Play(props: Readonly<PlayProps>) {
         return revealsByCategory[randomIndex];
     }
 
-    function handleRevealMoreButton() {
-        setNumberOfClicks((prevClicks) => prevClicks + 1);
-        const hiddenFields = Array.from({ length: totalTiles }, (_, index) => index).filter(
-            (index) => !revealedTiles.includes(index)
-        );
-
-        if (hiddenFields.length > 0) {
-            const randomIndex = hiddenFields[Math.floor(Math.random() * hiddenFields.length)];
-            setRevealedTiles((prevTiles) => [...prevTiles, randomIndex]);
-        }
-    }
 
     function handleStartGame() {
         const Reveal = RandomRevealFromUser(revealsByCategory);
@@ -95,7 +84,6 @@ export default function Play(props: Readonly<PlayProps>) {
         };
     }
 
-
     // Timer starten, wenn das Spiel beginnt
     useEffect(() => {
         if (gameStarted) {
@@ -110,15 +98,52 @@ export default function Play(props: Readonly<PlayProps>) {
         }
     }, [gameStarted]);
 
+    function revealRandomField() {
+        const hiddenFields = Array.from({ length: totalTiles }, (_, index) => index).filter(
+            (index) => !revealedTiles.includes(index)
+        );
+
+        if (hiddenFields.length > 0) {
+            const randomIndex = hiddenFields[Math.floor(Math.random() * hiddenFields.length)];
+            setRevealedTiles((prevTiles) => [...prevTiles, randomIndex]);
+        }
+    }
+
+    function handleRevealMoreButton() {
+        setNumberOfClicks((prevClicks) => prevClicks + 1);
+        revealRandomField();
+    }
+
+    useEffect(() => {
+        if (gameMode === "REVEAL_OVER_TIME" && gameStarted) {
+            const interval = setInterval(() => {
+                revealRandomField();
+            }, 3000); // Alle 3 Sekunden
+
+            return () => clearInterval(interval); // Cleanup
+        }
+    }, [gameMode, gameStarted, revealedTiles]);
+
+
 
     return (
         <div>
             <div className="space-between">
                 {!gameStarted && <button onClick={handleStartGame} id={gameStarted ? "inactive-button" : revealsByCategory.length > 0 ? "active-button" : "inactive-button"} disabled={gameStarted}>Start Game</button>}
+
                 {gameStarted && gameMode === "REVEAL_WITH_CLICKS" && numberOfClicks < 36 && <button onClick={handleRevealMoreButton} className="button-group-button" id="button-reveal-more">Reveal More</button>}
+
                 <button onClick={!gameStarted ? toggleGameMode : undefined} className={gameMode === "REVEAL_WITH_CLICKS" ? "button-with-clicks" : "button-over-time"} disabled={gameStarted} id={gameStarted ? "disabled-button" : ""}>{gameMode === "REVEAL_WITH_CLICKS" ? "Gamemode: 🔘 With Clicks" : "Gamemode: ⏳ Over Time"}</button>
-                {numberOfClicks >= 36 && <button className="button-group-button" id="button-reveal-more" onClick={()=>setShowSolution(true)}>Show Solution</button>}
+
+                {(numberOfClicks >= 36 || (gameMode === "REVEAL_OVER_TIME" && revealedTiles.length === totalTiles)) && (
+                    <button className="button-group-button" id="button-reveal-more" onClick={() => setShowSolution(true)}>
+                        Show Solution
+                    </button>
+                )}
+
+
                 <button onClick={() => {handleResetGame()}} className="button-group-button">Reset</button>
+
                 <div>{gameMode === "REVEAL_OVER_TIME" ? `⏱️ Time: ${time.toFixed(1)} sec` : ""}</div>
                 <div>{gameMode === "REVEAL_WITH_CLICKS" ? `🔘 Clicks: ${numberOfClicks}` : ""}</div>
             </div>
@@ -127,7 +152,7 @@ export default function Play(props: Readonly<PlayProps>) {
 
             {!gameStarted && <PreviewPlay selectedRevealsByCategory={selectedRevealsByCategory} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} randomCategorySelected={randomCategorySelected} setRandomCategorySelected={setRandomCategorySelected}/>}
 
-            {gameStarted && gameReveal && <StartGame gameReveal={gameReveal} gameFinished={gameFinished} setGameFinished={setGameFinished} gameMode={gameMode} revealedTiles={revealedTiles} setRevealedTiles={setRevealedTiles}/>}
+            {gameStarted && gameReveal && <StartGame gameReveal={gameReveal} gameFinished={gameFinished} setGameFinished={setGameFinished} gameMode={gameMode} revealedTiles={revealedTiles} setRevealedTiles={setRevealedTiles} handleResetGame={handleResetGame}/>}
         </div>
     );
 }
