@@ -1,8 +1,9 @@
-import {useEffect, useState} from "react";
+import {use, useEffect, useState} from "react";
 import { RevealModel } from "./model/RevealModel.ts";
 import "./styles/GameStart.css";
 import welcomePic from "../assets/Reveal-pic.jpg";
 import {HighScoreModel} from "./model/HighScoreModel.ts";
+import axios from "axios";
 
 type StartGameProps = {
     user: string;
@@ -17,16 +18,21 @@ type StartGameProps = {
     gameFinished: boolean;
     time: number;
     numberOfClicks: number;
+    gameStarted: boolean;
+    setGameStarted: (gameStarted: boolean) => void;
 };
 
 export default function StartGame(props: Readonly<StartGameProps>) {
     const [solutionWord, setSolutionWord] = useState<string>("");
 
     const [playerName, setPlayerName] = useState<string>("");
+    const [isNewHighScore, setIsNewHighScore] = useState<boolean>(false);
 
-    // const [isNewHighScore, setIsNewHighScore] = useState<boolean>(false);
-    // const [showAnimation, setShowAnimation] = useState<boolean>(false);
-    // const [showPopup, setShowPopup] = useState<boolean>(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupMessage, setPopupMessage] = useState("");
+
+    const [showAnimation, setShowAnimation] = useState<boolean>(false);
+    const [showNameInput, setShowNameInput] = useState<boolean>(false);
 
     function handleSolutionWord(event: React.FormEvent) {
         event.preventDefault();
@@ -34,7 +40,8 @@ export default function StartGame(props: Readonly<StartGameProps>) {
         const correctSolutions = props.gameReveal.solutionWords.map(word => word.toLowerCase());
 
         if (correctSolutions.includes(solutionWord.toLowerCase())) {
-            props.handleResetGame();
+            //props.setGameStarted(false);
+            //props.handleResetGame();
             alert("✅ Richtig! Spiel beendet.");
         } else {
             alert("❌ Falsch! Versuche es nochmal.");
@@ -43,19 +50,67 @@ export default function StartGame(props: Readonly<StartGameProps>) {
         setSolutionWord("");
     }
 
+    function checkForHighScore() {
+        const highScores = props.gameMode === "REVEAL_WITH_CLICKS" ? props.highScoresWithClicks : props.highScoresOverTime;
+
+        if (highScores.length < 10) {
+            setIsNewHighScore(true);
+            setShowNameInput(true);
+            return;
+        }
+
+        const lowestHighScore = highScores[highScores.length - 1];
+
+        const isBetterScore = props.gameMode === "REVEAL_WITH_CLICKS"
+            ? props.numberOfClicks < lowestHighScore.numberOfClicks
+            : props.time < lowestHighScore.scoreTime;
+
+        if (isBetterScore) {
+            setIsNewHighScore(true);
+            setShowNameInput(true);
+        }else{
+            props.handleResetGame()
+        }
+    }
+
+    useEffect(() => {
+        if(!props.gameStarted){
+            checkForHighScore()
+        }
+    }, [props.gameStarted]);
+
     function postHighScore() {
         const highScoreData = {
+            id: null,
             playerName,
             githubId: props.user,
             category: props.gameReveal.category,
             gameMode: props.gameMode,
             scoreTime: parseFloat(props.time.toFixed(1)),
-            numberOfClicks: props.numberOfClicks
+            numberOfClicks: props.numberOfClicks,
+            date: new Date().toISOString()
         };
-
         console.log("High Score Data:", highScoreData);
-        // Hier kannst du die Daten an eine API senden oder lokal speichern
+
+        axios
+            .post("/api/high-score", highScoreData)
+            .then(() => {
+                setShowNameInput(false);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
+
+    const handleSaveHighScore = () => {
+        if (playerName.trim().length < 3) {
+            setPopupMessage("Your name must be at least 3 characters long!");
+            setShowPopup(true);
+            return;
+        }
+        setShowNameInput(false);
+        postHighScore();
+    };
 
 
     useEffect(() => {
@@ -76,6 +131,37 @@ export default function StartGame(props: Readonly<StartGameProps>) {
                 />
                 <button className="button-group-button" type="submit">Check Solution</button>
             </form>
+
+            {/* Spielername Eingabefeld, wenn ein neuer Highscore erreicht wurde */}
+            {isNewHighScore && showNameInput && (
+                <div className="high-score-input">
+                    <label htmlFor="playerName">Congratulations! You secured a spot on the high score list. Enter your name:</label>
+                    <input
+                        className="playerName"
+                        type="text"
+                        value={playerName}
+                        onChange={(e) => setPlayerName(e.target.value)}
+                        placeholder="Enter your name"
+                    />
+                    <button className="button-group-button" onClick={handleSaveHighScore}>
+                        Save Highscore
+                    </button>
+                </div>
+            )}
+
+            {showPopup && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <h3>Hinweis</h3>
+                        <p>{popupMessage}</p>
+                        <div className="popup-actions">
+                            <button onClick={() => setShowPopup(false)} className="popup-confirm">
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="reveal-container">
                 <img className="reveal-pic" src={props.gameReveal.imageUrl} alt={props.gameReveal.name} />

@@ -17,7 +17,7 @@ type PlayProps = {
 
 export default function Play(props: Readonly<PlayProps>) {
     const [revealsByCategory, setRevealsByCategory] = useState<RevealModel[]>([]);
-    const [gameStarted, setGameStarted] = useState(false);
+    const [gameStarted, setGameStarted] = useState<boolean>(false);
     const [gameFinished, setGameFinished] = useState(false);
     const [gameReveal, setGameReveal] = useState<RevealModel | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
@@ -143,7 +143,7 @@ export default function Play(props: Readonly<PlayProps>) {
 
             {!gameStarted && <PreviewPlay selectedRevealsByCategory={selectedRevealsByCategory} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} randomCategorySelected={randomCategorySelected} setRandomCategorySelected={setRandomCategorySelected}/>}
 
-            {gameStarted && gameReveal && <StartGame user={props.user} gameReveal={gameReveal} gameMode={gameMode} revealedTiles={revealedTiles} handleResetGame={handleResetGame} highScoresOverTime={props.highScoresOverTime} highScoresWithClicks={props.highScoresWithClicks} getHighScoresOverTime={props.getHighScoresOverTime} getHighScoresWithClicks={props.getHighScoresWithClicks} gameFinished={gameFinished} time={time} numberOfClicks={numberOfClicks}/>}
+            {gameStarted && gameReveal && <StartGame user={props.user} gameReveal={gameReveal} gameMode={gameMode} revealedTiles={revealedTiles} handleResetGame={handleResetGame} highScoresOverTime={props.highScoresOverTime} highScoresWithClicks={props.highScoresWithClicks} getHighScoresOverTime={props.getHighScoresOverTime} getHighScoresWithClicks={props.getHighScoresWithClicks} gameFinished={gameFinished} time={time} numberOfClicks={numberOfClicks} gameStarted={gameStarted} setGameStarted={setGameStarted}/>}
         </div>
     );
 }
