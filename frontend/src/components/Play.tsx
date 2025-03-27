@@ -5,9 +5,14 @@ import StartGame from "./StartGame.tsx";
 import {Category} from "./model/Category.ts";
 import {GameMode} from "./model/GameMode.ts";
 import "./styles/Play.css"
+import {HighScoreModel} from "./model/HighScoreModel.ts";
 
 type PlayProps = {
     user: string;
+    highScoresOverTime: HighScoreModel[];
+    getHighScoresOverTime: () => void;
+    highScoresWithClicks: HighScoreModel[];
+    getHighScoresWithClicks: () => void;
 };
 
 export default function Play(props: Readonly<PlayProps>) {
@@ -20,7 +25,6 @@ export default function Play(props: Readonly<PlayProps>) {
     const [gameMode, setGameMode] = useState<GameMode>("REVEAL_WITH_CLICKS");
     const [showSolution, setShowSolution] = useState<boolean>(false);
 
-    const [playerName, setPlayerName] = useState<string>("");
     const [numberOfClicks, setNumberOfClicks] = useState<number>(0);
     const [time, setTime] = useState<number>(0);
     const [intervalId, setIntervalId] = useState<number | null>(null);
@@ -28,9 +32,6 @@ export default function Play(props: Readonly<PlayProps>) {
     const totalTiles = 36;
     const [revealedTiles, setRevealedTiles] = useState<number[]>([]);
 
-    // const [isNewHighScore, setIsNewHighScore] = useState<boolean>(false);
-    // const [showAnimation, setShowAnimation] = useState<boolean>(false);
-    // const [showPopup, setShowPopup] = useState<boolean>(false);
 
     function selectedRevealsByCategory(reveals: RevealModel[]) {
         setRevealsByCategory(reveals);
@@ -73,16 +74,6 @@ export default function Play(props: Readonly<PlayProps>) {
         prevState === "REVEAL_WITH_CLICKS" ? "REVEAL_OVER_TIME" : "REVEAL_WITH_CLICKS")
     }
 
-    const postHighScore = () => {
-        const highScoreData = {
-            playerName,
-            githubId: props.user,
-            category: gameReveal?.category,
-            gameMode: gameMode,
-            scoreTime: parseFloat(time.toFixed(1)),
-            numberOfClicks: numberOfClicks
-        };
-    }
 
     // Timer starten, wenn das Spiel beginnt
     useEffect(() => {
@@ -152,7 +143,7 @@ export default function Play(props: Readonly<PlayProps>) {
 
             {!gameStarted && <PreviewPlay selectedRevealsByCategory={selectedRevealsByCategory} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} randomCategorySelected={randomCategorySelected} setRandomCategorySelected={setRandomCategorySelected}/>}
 
-            {gameStarted && gameReveal && <StartGame gameReveal={gameReveal} gameMode={gameMode} revealedTiles={revealedTiles} handleResetGame={handleResetGame}/>}
+            {gameStarted && gameReveal && <StartGame user={props.user} gameReveal={gameReveal} gameMode={gameMode} revealedTiles={revealedTiles} handleResetGame={handleResetGame} highScoresOverTime={props.highScoresOverTime} highScoresWithClicks={props.highScoresWithClicks} getHighScoresOverTime={props.getHighScoresOverTime} getHighScoresWithClicks={props.getHighScoresWithClicks} gameFinished={gameFinished} time={time} numberOfClicks={numberOfClicks}/>}
         </div>
     );
 }
