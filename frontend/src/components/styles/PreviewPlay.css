@@ -72,5 +72,18 @@
 
 .no-category {
     color: red;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box, border-box;
+    animation: borderAnimation 2s infinite ease-in-out;  /* Border-Animation */
 }
 
+#button-reveal-more{
+    border-radius: 10px;
+    border: 2px solid transparent;
+    animation: borderAnimation 2s infinite ease-in-out
+}
+
+#button-reveal-more:focus {
+    outline: none; /* Optional: Entfernt den Standard-Fokusrahmen!*/
+}

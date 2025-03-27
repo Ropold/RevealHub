@@ -69,7 +69,7 @@ export default function PreviewPlay(props: Readonly<PreviewPlayProps>){
                         ? "Random"
                         : props.selectedCategory
                             ? getCategoryDisplayName(props.selectedCategory)
-                            : "No category selected"}
+                            : "No Category selected"}
                 </strong>
             </h3>
             <div className="category-images">
