@@ -1,0 +1,20 @@
+.solution-container {
+    display: flex;
+    gap: 10px; /* Abstand zwischen den Wörtern */
+    flex-wrap: wrap; /* Falls viele Wörter vorhanden sind, umbrechen */
+    justify-content: center;
+    padding: 10px;
+}
+
+.solution-word {
+    background-color: rgba(56, 142, 60, 0.8);
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease-in-out;
+}
+
+.solution-word:hover {
+    transform: scale(1.1);
+}

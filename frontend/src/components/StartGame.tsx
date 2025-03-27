@@ -33,7 +33,7 @@ export default function StartGame(props: Readonly<StartGameProps>) {
     return (
         <>
             <form className="solution-word-container space-between" onSubmit={handleSolutionWord}>
-                <label htmlFor="solution">Solution-Words:</label>
+                <label htmlFor="solution">Solution-Word:</label>
                 <input
                     id="solution-input"
                     className={`border-input${props.gameMode === "REVEAL_WITH_CLICKS" ? "-yellow" : "-purple"}`}
@@ -41,7 +41,7 @@ export default function StartGame(props: Readonly<StartGameProps>) {
                     value={solutionWord}
                     onChange={(e) => setSolutionWord(e.target.value)}
                 />
-                <button className="button-group-button" type="submit">Check</button>
+                <button className="button-group-button" type="submit">Check Solution</button>
             </form>
 
             <div className="reveal-container">

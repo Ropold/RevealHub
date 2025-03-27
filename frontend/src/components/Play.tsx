@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import StartGame from "./StartGame.tsx";
 import {Category} from "./model/Category.ts";
 import {GameMode} from "./model/GameMode.ts";
+import "./styles/Play.css"
 
 type PlayProps = {
     user: string;
@@ -17,6 +18,7 @@ export default function Play(props: Readonly<PlayProps>) {
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const [randomCategorySelected, setRandomCategorySelected] = useState<boolean>(false);
     const [gameMode, setGameMode] = useState<GameMode>("REVEAL_WITH_CLICKS");
+    const [showSolution, setShowSolution] = useState<boolean>(false);
 
     const [playerName, setPlayerName] = useState<string>("");
     const [numberOfClicks, setNumberOfClicks] = useState<number>(0);
@@ -44,7 +46,6 @@ export default function Play(props: Readonly<PlayProps>) {
 
     function handleRevealMoreButton() {
         setNumberOfClicks((prevClicks) => prevClicks + 1);
-        // Erstelle ein Array mit Indizes von 0 bis totalTiles - 1
         const hiddenFields = Array.from({ length: totalTiles }, (_, index) => index).filter(
             (index) => !revealedTiles.includes(index)
         );
@@ -75,6 +76,7 @@ export default function Play(props: Readonly<PlayProps>) {
         setTime(0);
         setNumberOfClicks(0);
         setRevealedTiles([]);
+        setShowSolution(false);
     }
 
     function toggleGameMode(){
@@ -113,12 +115,15 @@ export default function Play(props: Readonly<PlayProps>) {
         <div>
             <div className="space-between">
                 {!gameStarted && <button onClick={handleStartGame} id={gameStarted ? "inactive-button" : revealsByCategory.length > 0 ? "active-button" : "inactive-button"} disabled={gameStarted}>Start Game</button>}
-                {gameStarted && gameMode === "REVEAL_WITH_CLICKS" && <button onClick={handleRevealMoreButton} className="button-group-button" id="button-reveal-more">Reveal More</button>}
+                {gameStarted && gameMode === "REVEAL_WITH_CLICKS" && numberOfClicks < 36 && <button onClick={handleRevealMoreButton} className="button-group-button" id="button-reveal-more">Reveal More</button>}
                 <button onClick={!gameStarted ? toggleGameMode : undefined} className={gameMode === "REVEAL_WITH_CLICKS" ? "button-with-clicks" : "button-over-time"} disabled={gameStarted} id={gameStarted ? "disabled-button" : ""}>{gameMode === "REVEAL_WITH_CLICKS" ? "Gamemode: 🔘 With Clicks" : "Gamemode: ⏳ Over Time"}</button>
+                {numberOfClicks >= 36 && <button className="button-group-button" id="button-reveal-more" onClick={()=>setShowSolution(true)}>Show Solution</button>}
                 <button onClick={() => {handleResetGame()}} className="button-group-button">Reset</button>
                 <div>{gameMode === "REVEAL_OVER_TIME" ? `⏱️ Time: ${time.toFixed(1)} sec` : ""}</div>
                 <div>{gameMode === "REVEAL_WITH_CLICKS" ? `🔘 Clicks: ${numberOfClicks}` : ""}</div>
             </div>
+
+            {showSolution && <div className="solution-container">{gameReveal?.solutionWords.map((word, index) => (<div className="solution-word" key={index}>{word}</div>))}</div>}
 
             {!gameStarted && <PreviewPlay selectedRevealsByCategory={selectedRevealsByCategory} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} randomCategorySelected={randomCategorySelected} setRandomCategorySelected={setRandomCategorySelected}/>}
 
