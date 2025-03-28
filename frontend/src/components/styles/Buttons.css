@@ -93,11 +93,3 @@
 .button-over-time:hover {
     background-color: #7b1fa2 /* Dunkleres Türkis beim Hover */
 }
-
-#disabled-button{
-    cursor: default;
-    pointer-events: none;
-}
-#disabled-button:hover{
-    background-color: inherit;
-}

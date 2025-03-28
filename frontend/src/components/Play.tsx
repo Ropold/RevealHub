@@ -17,7 +17,7 @@ type PlayProps = {
 
 export default function Play(props: Readonly<PlayProps>) {
     const [revealsByCategory, setRevealsByCategory] = useState<RevealModel[]>([]);
-    const [showPreviewMode, setShowPreviewMode] = useState<boolean>(false);
+    const [showPreviewMode, setShowPreviewMode] = useState<boolean>(true);
     const [gameFinished, setGameFinished] = useState<boolean>(false);
     const [gameReveal, setGameReveal] = useState<RevealModel | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
@@ -50,14 +50,14 @@ export default function Play(props: Readonly<PlayProps>) {
         const Reveal = RandomRevealFromUser(revealsByCategory);
         if (Reveal) {
             setGameReveal(Reveal);
-            setShowPreviewMode(true);
+            setShowPreviewMode(false);
             setRandomCategorySelected(false);
             setGameFinished(false);
         }
     }
 
     function handleResetGame(){
-        setShowPreviewMode(false);
+        setShowPreviewMode(true);
         setGameFinished(true);
         setGameReveal(null);
         setRevealsByCategory([]);
@@ -77,17 +77,20 @@ export default function Play(props: Readonly<PlayProps>) {
 
     // Timer starten, wenn das Spiel beginnt
     useEffect(() => {
-        if (showPreviewMode) {
-            setTime(0);
+        if (!showPreviewMode && !gameFinished) {
+            // Timer starten, wenn das Spiel läuft
+            setTime(0);  // Setze die Zeit zurück
             const id = window.setInterval(() => {
-                setTime(prev => prev + 0.1);
-            }, 100);
+                setTime((prev) => prev + 0.1);
+            }, 100); // Timer alle 0.1 Sekunden
             setIntervalId(id);
-        } else if (!showPreviewMode && intervalId) {
+        } else if (intervalId) {
+            // Timer anhalten, wenn das Spiel abgeschlossen ist oder das Vorschaumodus beendet wird
             clearInterval(intervalId);
             setIntervalId(null);
         }
-    }, [showPreviewMode]);
+    }, [showPreviewMode, gameFinished]); // Abhängig von `showPreviewMode` und `gameFinished`
+
 
     function revealRandomField() {
         const hiddenFields = Array.from({ length: totalTiles }, (_, index) => index).filter(
@@ -106,32 +109,41 @@ export default function Play(props: Readonly<PlayProps>) {
     }
 
     useEffect(() => {
-        if (gameMode === "REVEAL_OVER_TIME" && showPreviewMode) {
+        if (gameMode === "REVEAL_OVER_TIME" && !showPreviewMode && !gameFinished) {
             const interval = setInterval(() => {
                 revealRandomField();
-            }, 3000); // Alle 3 Sekunden
-
-            return () => clearInterval(interval); // Cleanup
+            }, 100);
+            return () => clearInterval(interval);
         }
-    }, [gameMode, showPreviewMode, revealedTiles]);
+    }, [gameMode, showPreviewMode, revealedTiles, gameFinished]);
 
 
 
     return (
         <div>
             <div className="space-between">
-                {!showPreviewMode && <button onClick={handleStartGame} id={showPreviewMode ? "inactive-button" : revealsByCategory.length > 0 ? "active-button" : "inactive-button"} disabled={showPreviewMode}>Start Game</button>}
+                {showPreviewMode && <button onClick={handleStartGame} id={!showPreviewMode ? "inactive-button" : revealsByCategory.length > 0 ? "active-button" : "inactive-button"} disabled={!showPreviewMode}>Start Game</button>}
 
-                {!gameFinished && showPreviewMode && gameMode === "REVEAL_WITH_CLICKS" && numberOfClicks < 36 && <button onClick={handleRevealMoreButton} className="button-group-button" id="button-reveal-more">Reveal More</button>}
+                {!gameFinished && !showPreviewMode && gameMode === "REVEAL_WITH_CLICKS" && numberOfClicks < 36 && <button onClick={handleRevealMoreButton} className="button-group-button" id="button-border-animation">Reveal More</button>}
 
-                <button onClick={!showPreviewMode ? toggleGameMode : undefined} className={gameMode === "REVEAL_WITH_CLICKS" ? "button-with-clicks" : "button-over-time"} disabled={showPreviewMode} id={showPreviewMode ? "disabled-button" : ""}>{gameMode === "REVEAL_WITH_CLICKS" ? "Gamemode: 🔘 With Clicks" : "Gamemode: ⏳ Over Time"}</button>
+                {gameFinished && !showPreviewMode && <button className="button-group-button" id="button-border-animation">Play Again (rnd-cat)</button>}
 
-                {(numberOfClicks >= 36 || (gameMode === "REVEAL_OVER_TIME" && revealedTiles.length === totalTiles)) && (
-                    <button className="button-group-button" id="button-reveal-more" onClick={() => setShowSolutionWords(true)}>
-                        Show Solution
-                    </button>
+                <button
+                    onClick={gameFinished ? toggleGameMode : undefined}
+                    className={gameMode === "REVEAL_WITH_CLICKS" ? "button-with-clicks" : "button-over-time"}
+                    disabled={!gameFinished}
+                >
+                    {gameMode === "REVEAL_WITH_CLICKS" ? "Gamemode: 🔘 With Clicks" : "Gamemode: ⏳ Over Time"}
+                </button>
+
+
+                {!(gameFinished) && (
+                    (numberOfClicks >= 36 || (gameMode === "REVEAL_OVER_TIME" && revealedTiles.length === totalTiles)) && (
+                        <button className="button-group-button" id="button-border-animation" onClick={() => setShowSolutionWords(true)}>
+                            Show Solution
+                        </button>
+                    )
                 )}
-
 
                 <button onClick={() => {handleResetGame()}} className="button-group-button">Reset</button>
 
@@ -141,16 +153,16 @@ export default function Play(props: Readonly<PlayProps>) {
 
             {showSolutionWords &&
                 <div className="solution-container">
-                    <div className="solution-word-header">
+                    <div className="solution-word" id="solution-word-header">
                 Solution-Words:
                     </div>
                     {gameReveal?.solutionWords.map((word, index) => (<div className="solution-word" key={index}>{word}</div>))}
                 </div>
             }
 
-            {!showPreviewMode && <PreviewPlay selectedRevealsByCategory={selectedRevealsByCategory} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} randomCategorySelected={randomCategorySelected} setRandomCategorySelected={setRandomCategorySelected}/>}
+            {showPreviewMode && <PreviewPlay selectedRevealsByCategory={selectedRevealsByCategory} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} randomCategorySelected={randomCategorySelected} setRandomCategorySelected={setRandomCategorySelected}/>}
 
-            {showPreviewMode && gameReveal && <StartGame user={props.user} gameReveal={gameReveal} gameMode={gameMode} revealedTiles={revealedTiles} handleResetGame={handleResetGame} highScoresOverTime={props.highScoresOverTime} highScoresWithClicks={props.highScoresWithClicks} getHighScoresOverTime={props.getHighScoresOverTime} getHighScoresWithClicks={props.getHighScoresWithClicks} gameFinished={gameFinished} setGameFinished={setGameFinished} time={time} numberOfClicks={numberOfClicks} showPreviewMode={showPreviewMode} setShowPreviewMode={setShowPreviewMode} setShowSolutionWords={setShowSolutionWords}/>}
+            {!showPreviewMode && gameReveal && <StartGame user={props.user} gameReveal={gameReveal} gameMode={gameMode} revealedTiles={revealedTiles} handleResetGame={handleResetGame} highScoresOverTime={props.highScoresOverTime} highScoresWithClicks={props.highScoresWithClicks} getHighScoresOverTime={props.getHighScoresOverTime} getHighScoresWithClicks={props.getHighScoresWithClicks} gameFinished={gameFinished} setGameFinished={setGameFinished} time={time} numberOfClicks={numberOfClicks} showPreviewMode={showPreviewMode} setShowPreviewMode={setShowPreviewMode} setShowSolutionWords={setShowSolutionWords}/>}
         </div>
     );
 }

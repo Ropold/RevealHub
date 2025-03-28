@@ -1,4 +1,4 @@
-import {use, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import { RevealModel } from "./model/RevealModel.ts";
 import "./styles/GameStart.css";
 import welcomePic from "../assets/Reveal-pic.jpg";
@@ -100,7 +100,6 @@ export default function StartGame(props: Readonly<StartGameProps>) {
         setShowNameInput(false);
     }
 
-
     useEffect(() => {
         props.getHighScoresOverTime();
         props.getHighScoresWithClicks();
@@ -112,7 +111,6 @@ export default function StartGame(props: Readonly<StartGameProps>) {
             checkForHighScore();
             setShowFullImage(true);
             props.setShowSolutionWords(true);
-            //time & clicks anhalten
             setTimeout(() => {
                 setShowAnimation(false);
             }, 2000);
@@ -148,7 +146,7 @@ export default function StartGame(props: Readonly<StartGameProps>) {
                         onChange={(e) => setPlayerName(e.target.value)}
                         placeholder="Enter your name"
                     />
-                    <button className="button-group-button" onClick={handleSaveHighScore}>
+                    <button className="button-group-button" id="button-border-animation" onClick={handleSaveHighScore}>
                         Save Highscore
                     </button>
                 </div>

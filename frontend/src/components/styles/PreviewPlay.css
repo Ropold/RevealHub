@@ -78,13 +78,13 @@
     animation: borderAnimation 2s infinite ease-in-out;  /* Border-Animation */
 }
 
-#button-reveal-more{
+#button-border-animation{
     border-radius: 10px;
     border: 4px solid transparent;
     animation: borderAnimation 2s infinite ease-in-out
 }
 
-#button-reveal-more:focus {
+#button-border-animation:focus {
     outline: none; /* Optional: Entfernt den Standard-Fokusrahmen!*/
 }
 
