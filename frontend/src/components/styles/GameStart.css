@@ -56,6 +56,10 @@
     gap: 1px;
 }
 
+.show-full-image .mosaic-tile {
+    opacity: 0; /* Versteckt alle Tiles */
+}
+
 .mosaic-tile {
     opacity: 1;
     transition: opacity 0.3s ease-in-out;

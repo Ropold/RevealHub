@@ -18,3 +18,16 @@
 .solution-word:hover {
     transform: scale(1.1);
 }
+
+.solution-word-header {
+    background-color: #999;
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease-in-out;
+}
+
+.solution-word-header:hover {
+    transform: scale(1.1);
+}

@@ -16,37 +16,32 @@ type StartGameProps = {
     highScoresWithClicks: HighScoreModel[];
     getHighScoresWithClicks: () => void;
     gameFinished: boolean;
+    setGameFinished: (gameFinished: boolean) => void;
     time: number;
     numberOfClicks: number;
-    gameStarted: boolean;
-    setGameStarted: (gameStarted: boolean) => void;
+    showPreviewMode: boolean;
+    setShowPreviewMode: (gameStarted: boolean) => void;
+    setShowSolutionWords: (showSolutionWords: boolean) => void;
 };
 
 export default function StartGame(props: Readonly<StartGameProps>) {
     const [solutionWord, setSolutionWord] = useState<string>("");
-
     const [playerName, setPlayerName] = useState<string>("");
     const [isNewHighScore, setIsNewHighScore] = useState<boolean>(false);
-
-    const [showPopup, setShowPopup] = useState(false);
+    const [showPopup, setShowPopup] = useState<boolean>(false);
     const [popupMessage, setPopupMessage] = useState("");
-
     const [showAnimation, setShowAnimation] = useState<boolean>(false);
     const [showNameInput, setShowNameInput] = useState<boolean>(false);
+    const [showFullImage, setShowFullImage] = useState<boolean>(false);
+
 
     function handleSolutionWord(event: React.FormEvent) {
         event.preventDefault();
-
         const correctSolutions = props.gameReveal.solutionWords.map(word => word.toLowerCase());
 
         if (correctSolutions.includes(solutionWord.toLowerCase())) {
-            //props.setGameStarted(false);
-            //props.handleResetGame();
-            alert("✅ Richtig! Spiel beendet.");
-        } else {
-            alert("❌ Falsch! Versuche es nochmal.");
+            props.setGameFinished(true);
         }
-
         setSolutionWord("");
     }
 
@@ -58,7 +53,6 @@ export default function StartGame(props: Readonly<StartGameProps>) {
             setShowNameInput(true);
             return;
         }
-
         const lowestHighScore = highScores[highScores.length - 1];
 
         const isBetterScore = props.gameMode === "REVEAL_WITH_CLICKS"
@@ -69,15 +63,9 @@ export default function StartGame(props: Readonly<StartGameProps>) {
             setIsNewHighScore(true);
             setShowNameInput(true);
         }else{
-            props.handleResetGame()
+            return;
         }
     }
-
-    useEffect(() => {
-        if(!props.gameStarted){
-            checkForHighScore()
-        }
-    }, [props.gameStarted]);
 
     function postHighScore() {
         const highScoreData = {
@@ -102,15 +90,15 @@ export default function StartGame(props: Readonly<StartGameProps>) {
             });
     }
 
-    const handleSaveHighScore = () => {
+    function handleSaveHighScore() {
         if (playerName.trim().length < 3) {
             setPopupMessage("Your name must be at least 3 characters long!");
             setShowPopup(true);
             return;
         }
-        setShowNameInput(false);
         postHighScore();
-    };
+        setShowNameInput(false);
+    }
 
 
     useEffect(() => {
@@ -118,8 +106,23 @@ export default function StartGame(props: Readonly<StartGameProps>) {
         props.getHighScoresWithClicks();
     }, []);
 
+    useEffect(() => {
+        if(props.gameFinished){
+            setShowAnimation(true);
+            checkForHighScore();
+            setShowFullImage(true);
+            props.setShowSolutionWords(true);
+            //time & clicks anhalten
+            setTimeout(() => {
+                setShowAnimation(false);
+            }, 2000);
+        }
+    }, [props.gameFinished]);
+
+
     return (
         <>
+            {!props.gameFinished &&
             <form className="solution-word-container space-between" onSubmit={handleSolutionWord}>
                 <label htmlFor="solution">Solution-Word:</label>
                 <input
@@ -131,6 +134,8 @@ export default function StartGame(props: Readonly<StartGameProps>) {
                 />
                 <button className="button-group-button" type="submit">Check Solution</button>
             </form>
+            }
+
 
             {/* Spielername Eingabefeld, wenn ein neuer Highscore erreicht wurde */}
             {isNewHighScore && showNameInput && (
@@ -146,6 +151,13 @@ export default function StartGame(props: Readonly<StartGameProps>) {
                     <button className="button-group-button" onClick={handleSaveHighScore}>
                         Save Highscore
                     </button>
+                </div>
+            )}
+
+            {showAnimation && (
+                <div className="win-animation">
+                    {props.gameMode === "REVEAL_WITH_CLICKS" && <p>You completed the reveal Game game in {props.numberOfClicks} clicks!</p>}
+                    {props.gameMode === "REVEAL_OVER_TIME" && <p>You completed the reveal Game game in {props.time.toFixed(1)} seconds!</p>}
                 </div>
             )}
 
@@ -166,7 +178,7 @@ export default function StartGame(props: Readonly<StartGameProps>) {
             <div className="reveal-container">
                 <img className="reveal-pic" src={props.gameReveal.imageUrl} alt={props.gameReveal.name} />
 
-                <div className="mosaic-grid">
+                <div className={`mosaic-grid ${showFullImage ? "show-full-image" : ""}`}>
                     {[...Array(36)].map((_, index) => (
                         <div
                             key={index}
