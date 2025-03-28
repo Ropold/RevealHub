@@ -58,7 +58,6 @@ export default function Play(props: Readonly<PlayProps>) {
     }
 
     function handleStartNewGameWithRandomCategory() {
-        props.getActiveReveals();
         const allReveals = props.activeReveals;
         if (!allReveals || allReveals.length === 0) return;
 
@@ -67,19 +66,23 @@ export default function Play(props: Readonly<PlayProps>) {
             newReveal = allReveals[Math.floor(Math.random() * allReveals.length)];
         } while (newReveal.id === gameRevealByUser?.id && allReveals.length > 1);
 
-        setGameRevealByUser(newReveal);
-        setGameFinished(false);
-        setShowPreviewMode(false);
-        setShowNameInput(false);
-        setRandomCategorySelected(true);
-        setGameFinished(false);
-        setTime(0);
-        setNumberOfClicks(0);
         setRevealedTiles([]);
-        setShowSolutionWords(false);
         setShowFullImage(false);
-    }
 
+        // Verzögere das Setzen des neuen Bildes
+        setTimeout(() => {
+            setGameRevealByUser(newReveal); // Setze das neue Bild nach einer kleinen Verzögerung
+            setGameFinished(false);
+            setShowPreviewMode(false);
+            setShowNameInput(false);
+            setRandomCategorySelected(true);
+            setTime(0);
+            setNumberOfClicks(0);
+            setRevealedTiles([]);
+            setShowSolutionWords(false);
+            setShowFullImage(false);
+        }, 200); // 100ms Verzögerung (kann je nach Bedarf angepasst werden)
+    }
 
     function handleResetGame(){
         setShowPreviewMode(true);
@@ -141,7 +144,9 @@ export default function Play(props: Readonly<PlayProps>) {
         }
     }, [gameMode, showPreviewMode, revealedTiles, gameFinished]);
 
-
+    useEffect(() => {
+        props.getActiveReveals();
+    }, []);
 
     return (
         <div>
