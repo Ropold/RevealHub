@@ -7,7 +7,7 @@ import axios from "axios";
 
 type StartGameProps = {
     user: string;
-    gameReveal: RevealModel;
+    gameRevealByUser: RevealModel;
     gameMode: string;
     revealedTiles: number[];
     handleResetGame: () => void;
@@ -22,6 +22,10 @@ type StartGameProps = {
     showPreviewMode: boolean;
     setShowPreviewMode: (gameStarted: boolean) => void;
     setShowSolutionWords: (showSolutionWords: boolean) => void;
+    showNameInput: boolean;
+    setShowNameInput: (showNameInput: boolean) => void;
+    showFullImage: boolean;
+    setShowFullImage: (showFullImage: boolean) => void;
 };
 
 export default function StartGame(props: Readonly<StartGameProps>) {
@@ -31,13 +35,11 @@ export default function StartGame(props: Readonly<StartGameProps>) {
     const [showPopup, setShowPopup] = useState<boolean>(false);
     const [popupMessage, setPopupMessage] = useState("");
     const [showAnimation, setShowAnimation] = useState<boolean>(false);
-    const [showNameInput, setShowNameInput] = useState<boolean>(false);
-    const [showFullImage, setShowFullImage] = useState<boolean>(false);
 
 
     function handleSolutionWord(event: React.FormEvent) {
         event.preventDefault();
-        const correctSolutions = props.gameReveal.solutionWords.map(word => word.toLowerCase());
+        const correctSolutions = props.gameRevealByUser.solutionWords.map(word => word.toLowerCase());
 
         if (correctSolutions.includes(solutionWord.toLowerCase())) {
             props.setGameFinished(true);
@@ -50,7 +52,7 @@ export default function StartGame(props: Readonly<StartGameProps>) {
 
         if (highScores.length < 10) {
             setIsNewHighScore(true);
-            setShowNameInput(true);
+            props.setShowNameInput(true);
             return;
         }
         const lowestHighScore = highScores[highScores.length - 1];
@@ -61,7 +63,7 @@ export default function StartGame(props: Readonly<StartGameProps>) {
 
         if (isBetterScore) {
             setIsNewHighScore(true);
-            setShowNameInput(true);
+            props.setShowNameInput(true);
         }else{
             return;
         }
@@ -72,7 +74,7 @@ export default function StartGame(props: Readonly<StartGameProps>) {
             id: null,
             playerName,
             githubId: props.user,
-            category: props.gameReveal.category,
+            category: props.gameRevealByUser.category,
             gameMode: props.gameMode,
             scoreTime: parseFloat(props.time.toFixed(1)),
             numberOfClicks: props.numberOfClicks,
@@ -83,7 +85,7 @@ export default function StartGame(props: Readonly<StartGameProps>) {
         axios
             .post("/api/high-score", highScoreData)
             .then(() => {
-                setShowNameInput(false);
+                props.setShowNameInput(false);
             })
             .catch((error) => {
                 console.error(error);
@@ -97,7 +99,7 @@ export default function StartGame(props: Readonly<StartGameProps>) {
             return;
         }
         postHighScore();
-        setShowNameInput(false);
+        props.setShowNameInput(false);
     }
 
     useEffect(() => {
@@ -109,11 +111,11 @@ export default function StartGame(props: Readonly<StartGameProps>) {
         if(props.gameFinished){
             setShowAnimation(true);
             checkForHighScore();
-            setShowFullImage(true);
+            props.setShowFullImage(true);
             props.setShowSolutionWords(true);
             setTimeout(() => {
                 setShowAnimation(false);
-            }, 2000);
+            }, 3000);
         }
     }, [props.gameFinished]);
 
@@ -136,7 +138,7 @@ export default function StartGame(props: Readonly<StartGameProps>) {
 
 
             {/* Spielername Eingabefeld, wenn ein neuer Highscore erreicht wurde */}
-            {isNewHighScore && showNameInput && (
+            {isNewHighScore && props.showNameInput && (
                 <div className="high-score-input">
                     <label htmlFor="playerName">Congratulations! You secured a spot on the high score list. Enter your name:</label>
                     <input
@@ -174,9 +176,10 @@ export default function StartGame(props: Readonly<StartGameProps>) {
             )}
 
             <div className="reveal-container">
-                <img className="reveal-pic" src={props.gameReveal.imageUrl} alt={props.gameReveal.name} />
 
-                <div className={`mosaic-grid ${showFullImage ? "show-full-image" : ""}`}>
+                <img className="reveal-pic" src={props.gameRevealByUser.imageUrl} alt={props.gameRevealByUser.name} />
+
+                <div className={`mosaic-grid ${props.showFullImage ? "show-full-image" : ""}`}>
                     {[...Array(36)].map((_, index) => (
                         <div
                             key={index}
