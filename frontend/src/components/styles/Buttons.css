@@ -54,6 +54,13 @@
     background-color: #d32f2f;
 }
 
+#active-button-my-reveals{
+    background-color: #66bb6a;
+}
+#active-button-my-reveals:hover{
+    background-color: #388e3c;
+}
+
 /* Aktiv- und Offline-Buttons */
 #active-button {
     background-color: #66bb6a;

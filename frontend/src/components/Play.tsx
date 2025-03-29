@@ -139,7 +139,7 @@ export default function Play(props: Readonly<PlayProps>) {
         if (gameMode === "REVEAL_OVER_TIME" && !showPreviewMode && !gameFinished) {
             const interval = setInterval(() => {
                 revealRandomField();
-            }, 100);
+            }, 3000);
             return () => clearInterval(interval);
         }
     }, [gameMode, showPreviewMode, revealedTiles, gameFinished]);

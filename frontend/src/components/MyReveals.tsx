@@ -291,7 +291,7 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                                 />
                                 <div className="space-between">
                                     <button
-                                        id={r.isActive ? "active-button" : "inactive-button"}
+                                        id={r.isActive ? "active-button-my-reveals" : "inactive-button"}
                                         onClick={() => handleToggleActiveStatus(r.id)}
                                     >
                                         {r.isActive ? "Active" : "Inactive"}
