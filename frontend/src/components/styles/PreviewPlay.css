@@ -104,6 +104,9 @@
     z-index: 1000; /* Stellt sicher, dass es über allem liegt */
 }
 
+#nothing-words-animation{
+    background-color: #ff9999;
+}
 
 @keyframes bounceIn {
     0% {

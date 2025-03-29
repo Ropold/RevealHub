@@ -34,18 +34,29 @@ export default function StartGame(props: Readonly<StartGameProps>) {
     const [isNewHighScore, setIsNewHighScore] = useState<boolean>(false);
     const [showPopup, setShowPopup] = useState<boolean>(false);
     const [popupMessage, setPopupMessage] = useState("");
-    const [showAnimation, setShowAnimation] = useState<boolean>(false);
+    const [showWinAnimation, setShowWinAnimation] = useState<boolean>(false);
+    const [showCloseWordsAnimation, setShowCloseWordsAnimation] = useState<boolean>(false);
+    const [showNothingWordsAnimation, setShowNothingWordsAnimation] = useState<boolean>(false);
 
 
     function handleSolutionWord(event: React.FormEvent) {
         event.preventDefault();
-        const correctSolutions = props.gameRevealByUser.solutionWords.map(word => word.toLowerCase());
+        const lowerCasedWord = solutionWord.toLowerCase();
 
-        if (correctSolutions.includes(solutionWord.toLowerCase())) {
+        const correctSolutions = props.gameRevealByUser.solutionWords.map(word => word.toLowerCase());
+        const correctCloseSolutions = props.gameRevealByUser.closeSolutionWords.map(word => word.toLowerCase());
+
+        if (correctSolutions.includes(lowerCasedWord)) {
             props.setGameFinished(true);
+        } else if (correctCloseSolutions.includes(lowerCasedWord)) {
+            setShowCloseWordsAnimation(true);
+        } else {
+            setShowNothingWordsAnimation(true);
         }
+
         setSolutionWord("");
     }
+
 
     function checkForHighScore() {
         const highScores = props.gameMode === "REVEAL_WITH_CLICKS" ? props.highScoresWithClicks : props.highScoresOverTime;
@@ -108,13 +119,24 @@ export default function StartGame(props: Readonly<StartGameProps>) {
     }, []);
 
     useEffect(() => {
+        if (showCloseWordsAnimation || showNothingWordsAnimation) {
+            const timeout = setTimeout(() => {
+                setShowCloseWordsAnimation(false);
+                setShowNothingWordsAnimation(false);
+            }, 1500);
+            return () => clearTimeout(timeout); // Cleanup
+        }
+    }, [showCloseWordsAnimation, showNothingWordsAnimation]);
+
+
+    useEffect(() => {
         if(props.gameFinished){
-            setShowAnimation(true);
+            setShowWinAnimation(true);
             checkForHighScore();
             props.setShowFullImage(true);
             props.setShowSolutionWords(true);
             setTimeout(() => {
-                setShowAnimation(false);
+                setShowWinAnimation(false);
             }, 3000);
         }
     }, [props.gameFinished]);
@@ -154,12 +176,25 @@ export default function StartGame(props: Readonly<StartGameProps>) {
                 </div>
             )}
 
-            {showAnimation && (
+            {showWinAnimation && (
                 <div className="win-animation">
                     {props.gameMode === "REVEAL_WITH_CLICKS" && <p>You completed the reveal Game game in {props.numberOfClicks} clicks!</p>}
                     {props.gameMode === "REVEAL_OVER_TIME" && <p>You completed the reveal Game game in {props.time.toFixed(1)} seconds!</p>}
                 </div>
             )}
+
+            { showCloseWordsAnimation && (
+                <div className="win-animation">
+                    <p>Very Close</p>
+                </div>
+            )}
+
+            { showNothingWordsAnimation && (
+                <div className="win-animation" id="nothing-words-animation">
+                    <p>Try again to guess it</p>
+                </div>
+            )}
+
 
             {showPopup && (
                 <div className="popup-overlay">
