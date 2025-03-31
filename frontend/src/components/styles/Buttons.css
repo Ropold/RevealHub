@@ -100,3 +100,11 @@
 .button-over-time:hover {
     background-color: #7b1fa2 /* Dunkleres Türkis beim Hover */
 }
+
+#active-paginate{
+    background-color: #999;
+}
+#active-paginate:hover{
+    background-color: #555;
+    cursor: default;
+}

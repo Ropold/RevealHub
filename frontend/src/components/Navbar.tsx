@@ -10,6 +10,7 @@ type NavbarProps = {
     user: string
     getUser: () => void
     setIsEditing: (isEditing: boolean) => void;
+    setCurrentPage: (currentPage: number) => void;
 }
 
 export default function Navbar(props: Readonly<NavbarProps>) {
@@ -52,6 +53,7 @@ export default function Navbar(props: Readonly<NavbarProps>) {
                     className="clickable-header"
                     onClick={() => {
                         navigate("/list-of-all-reveals");
+                        props.setCurrentPage(1);
                     }}
                 >
                     <h2 className="header-title">Reveal Collection</h2>
