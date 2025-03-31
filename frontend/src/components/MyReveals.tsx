@@ -239,7 +239,7 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                                     onChange={(e) => handleSolutionWordChange(index, e.target.value)}
                                 />
                             ))}
-                            <button type="button" className="solution-words-button more-space" onClick={handleAddSolutionWord}>
+                            <button type="button" className="button-grey more-space" onClick={handleAddSolutionWord}>
                                 Extend Words
                             </button>
                         </label>
@@ -257,7 +257,7 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                                 />
                             ))}
                             <br /> {/* Zeilenumbruch hinzufügen */}
-                            <button className="solution-words-button more-space" type="button" onClick={handleAddCloseSolutionWord}>
+                            <button className="button-grey more-space" type="button" onClick={handleAddCloseSolutionWord}>
                                 Extend Close-Words
                             </button>
                         </div>

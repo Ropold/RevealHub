@@ -80,7 +80,7 @@ export default function ListOfAllReveals(props: Readonly<ListOfAllRevealsProps>)
             <div>
                 <h2>List Of All Reveals - Don't Spoiler yourself!</h2>
                 {!isSpoiler && <button className="button-group-button" onClick={() => setIsSpoiler(true)}>I don't care - show me</button>}
-                {isSpoiler && <button className="solution-words-button" onClick={() => setIsSpoiler(false)}>Hide all Reveals</button>}
+                {isSpoiler && <button className="button-grey" onClick={() => setIsSpoiler(false)}>Hide all Reveals</button>}
             </div>
             {isSpoiler && (
             <>

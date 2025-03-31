@@ -3,7 +3,7 @@
     margin: 0 auto; /* Horizontal zentrieren */
 }
 
-.input-small{
+.input-small, select{
     width: 100%;
     height: 40px;
     padding: 8px;
@@ -39,9 +39,9 @@
     margin-bottom: 10px;
 }
 
-.solution-words-button{
+.button-grey{
     background-color: #999;
 }
-.solution-words-button:hover{
+.button-grey:hover{
     background-color: #555;
 }
