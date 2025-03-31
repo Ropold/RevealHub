@@ -54,9 +54,19 @@
     background-color: #d32f2f;
 }
 
+#active-button-my-reveals{
+    background-color: #66bb6a;
+}
+#active-button-my-reveals:hover{
+    background-color: #388e3c;
+}
+
 /* Aktiv- und Offline-Buttons */
 #active-button {
     background-color: #66bb6a;
+    border-radius: 10px;
+    border: 4px solid transparent;
+    animation: borderAnimation 2s infinite ease-in-out
 }
 
 #active-button:hover {
@@ -89,12 +99,4 @@
 
 .button-over-time:hover {
     background-color: #7b1fa2 /* Dunkleres Türkis beim Hover */
-}
-
-#disabled-button{
-    cursor: default;
-    pointer-events: none;
-}
-#disabled-button:hover{
-    background-color: inherit;
 }

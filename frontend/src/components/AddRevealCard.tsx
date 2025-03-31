@@ -202,7 +202,7 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
                     )}
 
                     <div className="space-between">
-                        <button className="button-group-button" type="submit">Add Memory Card</button>
+                        <button className="button-group-button" type="submit">Add Reveal Card</button>
                     </div>
                 </form>
 

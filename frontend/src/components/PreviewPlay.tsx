@@ -18,7 +18,6 @@ type PreviewPlayProps = {
 export default function PreviewPlay(props: Readonly<PreviewPlayProps>){
     const [activeCategories, setActiveCategories] = useState<Category[]>([]);
 
-
     function getActiveCategories(){
         axios.get("/api/reveal-hub/active/categories")
             .then((response) => {

@@ -155,7 +155,7 @@ export default function App() {
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Welcome />} />
-        <Route path="/play" element={<Play user={user}/>} />
+        <Route path="/play" element={<Play user={user} highScoresOverTime={highScoresOverTime} highScoresWithClicks={highScoresWithClicks} getHighScoresOverTime={getHighScoresOverTime} getHighScoresWithClicks={getHighScoresWithClicks} activeReveals={activeReveals} getActiveReveals={getActiveReveals}/>} />
         <Route path="/list-of-all-reveals" element={<ListOfAllReveals activeReveals={activeReveals} getActiveReveals={getActiveReveals} favorites={favorites} toggleFavorite={toggleFavorite} user={user}/>} />
         <Route path="/reveal/:id" element={<Details/>} />
         <Route path="/high-score" element={<HighScore highScoresOverTime={highScoresOverTime} highScoresWithClicks={highScoresWithClicks} getHighScoresOverTime={getHighScoresOverTime} getHighScoresWithClicks={getHighScoresWithClicks}/>} />
@@ -168,7 +168,6 @@ export default function App() {
         </Route>
       </Routes>
       <Footer/>
-
 
     </>
   )
