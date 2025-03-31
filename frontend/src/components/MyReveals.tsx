@@ -15,11 +15,12 @@ type MyRevealsProps = {
     user: string;
     favorites: string[];
     toggleFavorite: (memoryId: string) => void;
+    isEditing: boolean;
+    setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function MyReveals(props: Readonly<MyRevealsProps>) {
 
-    const [isEditing, setIsEditing] = useState<boolean>(false);
     const [editData, setEditData] = useState<RevealModel | null>(null);
     const [image, setImage] = useState<File | null>(null);
     const [revealToDelete, setRevealToDelete] = useState<string | null>(null);
@@ -30,7 +31,7 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
         const revealToEdit = props.allReveals.find((reveal) => reveal.id === revealId);
         if (revealToEdit) {
             setEditData(revealToEdit);
-            setIsEditing(true);
+            props.setIsEditing(true);
 
             // Hier nehmen wir einfach an, dass immer ein Bild vorhanden ist, wenn imageUrl gesetzt ist
             fetch(revealToEdit.imageUrl)
@@ -96,7 +97,7 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                         reveal.id === editData.id ? {...reveal, ...response.data} : reveal
                     )
                 );
-                setIsEditing(false);
+                props.setIsEditing(false);
             })
             .catch((error) => {
                 console.error("Error saving reveal edits:", error);
@@ -176,7 +177,7 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
 
     return (
         <div>
-            {isEditing ? (
+            {props.isEditing ? (
                 <div className="edit-form">
                     <h2>Edit Reveal</h2>
                     <form onSubmit={handleSaveEdit}>
@@ -272,7 +273,7 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                             <button className="button-group-button" type="submit">
                                 Save Changes
                             </button>
-                            <button className="button-group-button" type="button" onClick={() => setIsEditing(false)}>
+                            <button className="button-group-button" type="button" onClick={() => props.setIsEditing(false)}>
                                 Cancel
                             </button>
                         </div>

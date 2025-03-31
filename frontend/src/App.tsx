@@ -29,6 +29,7 @@ export default function App() {
     const [highScoresOverTime, setHighScoresOverTime] = useState<HighScoreModel[]>([]);
     const [highScoresWithClicks, setHighScoresWithClicks] = useState<HighScoreModel[]>([]);
     const [favorites, setFavorites] = useState<string[]>([]);
+    const [isEditing, setIsEditing] = useState<boolean>(false);
 
     //Reveal functions
     const getAllReveals = () => {
@@ -151,7 +152,7 @@ export default function App() {
 
   return (
     <>
-      <Navbar userDetails={userDetails} getUserDetails={getUserDetails} user={user} getUser={getUser} />
+      <Navbar userDetails={userDetails} getUserDetails={getUserDetails} user={user} getUser={getUser} setIsEditing={setIsEditing}/>
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Welcome />} />
@@ -162,7 +163,7 @@ export default function App() {
 
         <Route element={<ProtectedRoute user={user} />}>
             <Route path="/favorites" element={<Favorites favorites={favorites} user={user} toggleFavorite={toggleFavorite}/>} />
-            <Route path="/my-reveals" element={<MyReveals allReveals={allReveals} getAllReveals={getAllReveals} setAllReveals={setAllReveals} user={user} favorites={favorites} toggleFavorite={toggleFavorite}/>} />
+            <Route path="/my-reveals" element={<MyReveals allReveals={allReveals} getAllReveals={getAllReveals} setAllReveals={setAllReveals} user={user} favorites={favorites} toggleFavorite={toggleFavorite} isEditing={isEditing} setIsEditing={setIsEditing}/>} />
             <Route path="/add" element={<AddRevealCard user={user} handleNewRevealSubmit={handleNewRevealSubmit}/>} />
             <Route path="/profile" element={<Profile userDetails={userDetails}/>} />
         </Route>
