@@ -161,20 +161,34 @@ export default function StartGame(props: Readonly<StartGameProps>) {
 
             {/* Spielername Eingabefeld, wenn ein neuer Highscore erreicht wurde */}
             {isNewHighScore && props.showNameInput && (
-                <div className="high-score-input">
-                    <label htmlFor="playerName">Congratulations! You secured a spot on the high score list. Enter your name:</label>
+                <form
+                    className="high-score-input"
+                    onSubmit={(e) => {
+                        e.preventDefault(); // Verhindert das Neuladen der Seite
+                        handleSaveHighScore();
+                    }}
+                >
+                    <label htmlFor="playerName">
+                        Congratulations! You secured a spot on the high score list. Enter your name:
+                    </label>
                     <input
                         className="playerName"
                         type="text"
+                        id="playerName"
                         value={playerName}
                         onChange={(e) => setPlayerName(e.target.value)}
                         placeholder="Enter your name"
                     />
-                    <button className="button-group-button" id="button-border-animation" onClick={handleSaveHighScore}>
+                    <button
+                        className="button-group-button"
+                        id="button-border-animation"
+                        type="submit"
+                    >
                         Save Highscore
                     </button>
-                </div>
+                </form>
             )}
+
 
             {showWinAnimation && (
                 <div className="win-animation">
