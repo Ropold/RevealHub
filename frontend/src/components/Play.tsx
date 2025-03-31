@@ -153,14 +153,15 @@ export default function Play(props: Readonly<PlayProps>) {
             <div className="space-between">
                 {showPreviewMode && <button onClick={handleStartGameWithUserCategory} id={!showPreviewMode ? "inactive-button" : revealsByCategory.length > 0 ? "active-button" : "inactive-button"} disabled={!showPreviewMode}>Start Game</button>}
 
-                {!gameFinished && !showPreviewMode && gameMode === "REVEAL_WITH_CLICKS" && numberOfClicks < 36 && <button onClick={handleRevealMoreButton} className="button-group-button" id="button-border-animation">Reveal More</button>}
+                {!gameFinished && !showPreviewMode && gameMode === "REVEAL_WITH_CLICKS" && numberOfClicks < 36 && <button onClick={handleRevealMoreButton} className="button-group-button" id="button-border-animation">Reveal One Tile</button>}
 
-                {gameFinished && !showPreviewMode && <button onClick={handleStartNewGameWithRandomCategory} className="button-group-button" id="button-border-animation">Play Again (rnd-cat)</button>}
+                {gameFinished && !showPreviewMode && <button onClick={handleStartNewGameWithRandomCategory} className="button-group-button" id="button-border-animation">Play Again (Random Category)</button>}
 
                 <button
                     onClick={gameFinished ? toggleGameMode : undefined}
                     className={gameMode === "REVEAL_WITH_CLICKS" ? "button-with-clicks" : "button-over-time"}
                     disabled={!gameFinished}
+                    id={showPreviewMode ? "button-border-animation" : undefined}
                 >
                     {gameMode === "REVEAL_WITH_CLICKS" ? "Gamemode: 🔘 With Clicks" : "Gamemode: ⏳ Over Time"}
                 </button>
@@ -174,7 +175,7 @@ export default function Play(props: Readonly<PlayProps>) {
                     )
                 )}
 
-                <button onClick={() => {handleResetGame()}} className="button-group-button">Reset</button>
+                <button onClick={() => {handleResetGame()}} className="button-group-button" id={!showPreviewMode && gameFinished ? "button-border-animation" : undefined}>Reset</button>
 
                 <div>{gameMode === "REVEAL_OVER_TIME" ? `⏱️ Time: ${time.toFixed(1)} sec` : ""}</div>
                 <div>{gameMode === "REVEAL_WITH_CLICKS" ? `🔘 Clicks: ${numberOfClicks}` : ""}</div>

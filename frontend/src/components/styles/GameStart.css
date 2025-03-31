@@ -4,6 +4,8 @@
     grid-template-columns: auto 1fr auto; /* Label - Input - Button */
     align-items: center; /* Vertikal ausrichten */
     gap: 10px; /* Abstand zwischen den Elementen */
+    width: 800px; /* Breite des Containers */
+    margin: 0 auto; /* Zentriert den Container */
 }
 
 

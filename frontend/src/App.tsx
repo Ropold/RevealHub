@@ -29,6 +29,9 @@ export default function App() {
     const [highScoresOverTime, setHighScoresOverTime] = useState<HighScoreModel[]>([]);
     const [highScoresWithClicks, setHighScoresWithClicks] = useState<HighScoreModel[]>([]);
     const [favorites, setFavorites] = useState<string[]>([]);
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+
 
     //Reveal functions
     const getAllReveals = () => {
@@ -151,18 +154,18 @@ export default function App() {
 
   return (
     <>
-      <Navbar userDetails={userDetails} getUserDetails={getUserDetails} user={user} getUser={getUser} />
+      <Navbar userDetails={userDetails} getUserDetails={getUserDetails} user={user} getUser={getUser} setIsEditing={setIsEditing} setCurrentPage={setCurrentPage}/>
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Welcome />} />
         <Route path="/play" element={<Play user={user} highScoresOverTime={highScoresOverTime} highScoresWithClicks={highScoresWithClicks} getHighScoresOverTime={getHighScoresOverTime} getHighScoresWithClicks={getHighScoresWithClicks} activeReveals={activeReveals} getActiveReveals={getActiveReveals}/>} />
-        <Route path="/list-of-all-reveals" element={<ListOfAllReveals activeReveals={activeReveals} getActiveReveals={getActiveReveals} favorites={favorites} toggleFavorite={toggleFavorite} user={user}/>} />
+        <Route path="/list-of-all-reveals" element={<ListOfAllReveals activeReveals={activeReveals} getActiveReveals={getActiveReveals} favorites={favorites} toggleFavorite={toggleFavorite} user={user} currentPage={currentPage} setCurrentPage={setCurrentPage} />} />
         <Route path="/reveal/:id" element={<Details/>} />
         <Route path="/high-score" element={<HighScore highScoresOverTime={highScoresOverTime} highScoresWithClicks={highScoresWithClicks} getHighScoresOverTime={getHighScoresOverTime} getHighScoresWithClicks={getHighScoresWithClicks}/>} />
 
         <Route element={<ProtectedRoute user={user} />}>
             <Route path="/favorites" element={<Favorites favorites={favorites} user={user} toggleFavorite={toggleFavorite}/>} />
-            <Route path="/my-reveals" element={<MyReveals allReveals={allReveals} getAllReveals={getAllReveals} setAllReveals={setAllReveals} user={user} favorites={favorites} toggleFavorite={toggleFavorite}/>} />
+            <Route path="/my-reveals" element={<MyReveals allReveals={allReveals} getAllReveals={getAllReveals} setAllReveals={setAllReveals} user={user} favorites={favorites} toggleFavorite={toggleFavorite} isEditing={isEditing} setIsEditing={setIsEditing} />} />
             <Route path="/add" element={<AddRevealCard user={user} handleNewRevealSubmit={handleNewRevealSubmit}/>} />
             <Route path="/profile" element={<Profile userDetails={userDetails}/>} />
         </Route>

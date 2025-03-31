@@ -9,6 +9,8 @@ type NavbarProps = {
     getUserDetails: () => void;
     user: string
     getUser: () => void
+    setIsEditing: (isEditing: boolean) => void;
+    setCurrentPage: (currentPage: number) => void;
 }
 
 export default function Navbar(props: Readonly<NavbarProps>) {
@@ -51,6 +53,7 @@ export default function Navbar(props: Readonly<NavbarProps>) {
                     className="clickable-header"
                     onClick={() => {
                         navigate("/list-of-all-reveals");
+                        props.setCurrentPage(1);
                     }}
                 >
                     <h2 className="header-title">Reveal Collection</h2>
@@ -70,7 +73,7 @@ export default function Navbar(props: Readonly<NavbarProps>) {
                     <>
                         <button className="button-group-button" onClick={() => navigate(`/favorites`)}>Favorites</button>
                         <button className="button-group-button" onClick={() => navigate("/add")}>Add Reveal</button>
-                        <button className="button-group-button" onClick={() => {navigate("/my-reveals")}}>My Reveals</button>
+                        <button className="button-group-button" onClick={() => {navigate("/my-reveals"); props.setIsEditing(false)}}>My Reveals</button>
                         <button className="button-group-button" onClick={() => navigate("/profile")}>Profile</button>
                         <button className="button-group-button" onClick={logoutFromGithub}>Logout</button>
                     </>

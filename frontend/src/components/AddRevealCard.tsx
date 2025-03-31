@@ -158,7 +158,7 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
                                 onChange={(e) => handleSolutionWordChange(index, e.target.value)}
                             />
                         ))}
-                        <button type="button" className="solution-words-button" onClick={handleAddSolutionWord}>
+                        <button type="button" className="button-grey" onClick={handleAddSolutionWord}>
                             Extend Words
                         </button>
                     </label>
@@ -175,7 +175,7 @@ export default function AddRevealCard(props: Readonly<AddRevealCardProps>) {
                                 onChange={(e) => handleCloseSolutionWordChange(index, e.target.value)}
                             />
                         ))}
-                        <button type="button" className="solution-words-button" onClick={handleAddCloseSolutionWord}>
+                        <button type="button" className="button-grey" onClick={handleAddCloseSolutionWord}>
                             Extend Close-Words
                         </button>
                     </label>
