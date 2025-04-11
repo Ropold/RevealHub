@@ -25,6 +25,8 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
     const [image, setImage] = useState<File | null>(null);
     const [revealToDelete, setRevealToDelete] = useState<string | null>(null);
     const [showPopup, setShowPopup] = useState(false);
+    const [imageChanged, setImageChanged] = useState(false);
+
 
 
     const handleEditToggle = (revealId: string) => {
@@ -79,7 +81,7 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
         };
 
         const data = new FormData();
-        if (image) {
+        if (imageChanged && image) {
             data.append("image", image);
         }
 
@@ -108,6 +110,7 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setImage(e.target.files[0]);
+            setImageChanged(true);
         }
     };
 
