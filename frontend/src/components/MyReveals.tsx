@@ -21,13 +21,16 @@ type MyRevealsProps = {
 
 export default function MyReveals(props: Readonly<MyRevealsProps>) {
 
+    const [userReveals, setUserReveals] = useState<RevealModel[]>([]);
     const [editData, setEditData] = useState<RevealModel | null>(null);
     const [image, setImage] = useState<File | null>(null);
     const [revealToDelete, setRevealToDelete] = useState<string | null>(null);
     const [showPopup, setShowPopup] = useState(false);
     const [imageChanged, setImageChanged] = useState(false);
 
-
+    useEffect(() => {
+        setUserReveals(props.allReveals.filter(reveal => reveal.githubId === props.user));
+    }, [props.allReveals, props.user]);
 
     const handleEditToggle = (revealId: string) => {
         const revealToEdit = props.allReveals.find((reveal) => reveal.id === revealId);
@@ -284,8 +287,8 @@ export default function MyReveals(props: Readonly<MyRevealsProps>) {
                 </div>
             ) : (
                 <div className="reveal-card-container">
-                    {props.allReveals.length > 0 ? (
-                        props.allReveals.map((r) => (
+                    {userReveals.length > 0 ? (
+                        userReveals.map((r) => (
                             <div key={r.id}>
                                 <RevealCard
                                     reveal={r}
